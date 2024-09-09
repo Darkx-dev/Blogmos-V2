@@ -69,14 +69,4 @@ async function GET(request) {
   return NextResponse.json({ message: "GET request to /api/profile" });
 }
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "5mb",
-    },
-  },
-  // Specifies the maximum allowed duration for this function to execute (in seconds)
-  maxDuration: 5,
-};
-
 export { GET, PATCH };

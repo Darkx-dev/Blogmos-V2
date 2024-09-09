@@ -157,14 +157,4 @@ export async function DELETE(request) {
   );
 }
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "5mb",
-    },
-  },
-  // Specifies the maximum allowed duration for this function to execute (in seconds)
-  maxDuration: 5,
-};
-
 export { GET };
