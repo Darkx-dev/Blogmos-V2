@@ -24,3 +24,5 @@ export async function POST(request) {
   });
   return NextResponse.json({ success: true, user });
 }
+
+export const runtime = "nodejs";

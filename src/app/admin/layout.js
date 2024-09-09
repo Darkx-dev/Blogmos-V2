@@ -20,7 +20,7 @@ const Layout = ({ children }) => {
           </h5>
           <div className="flex items-center">
             <Link href="/admin/profile">
-              <Image src={"/author_img.png"} alt="" width={40} />
+              <Image src={"/author_img.png"} alt="" width={40} height={40}/>
             </Link>
             <div className="hidden max-md:flex">
               <SidebarAdmin />

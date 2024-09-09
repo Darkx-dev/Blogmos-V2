@@ -11,3 +11,5 @@ export async function POST(request) {
   const { email, password } = await request.json();
   return NextResponse.json({ message: "Success", email, password });
 }
+
+export const runtime = "nodejs";

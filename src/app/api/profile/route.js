@@ -70,3 +70,4 @@ async function GET(request) {
 }
 
 export { GET, PATCH };
+export const runtime = "nodejs";

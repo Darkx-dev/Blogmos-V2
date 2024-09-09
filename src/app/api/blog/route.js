@@ -158,3 +158,5 @@ export async function DELETE(request) {
 }
 
 export { GET };
+
+export const runtime = "nodejs";

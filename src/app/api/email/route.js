@@ -34,3 +34,5 @@ export async function DELETE(request) {
     message: "Email deleted successfully",
   });
 }
+
+export const runtime = "nodejs";
