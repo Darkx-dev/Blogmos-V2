@@ -10,6 +10,8 @@ const blogSchema = new mongoose.Schema({
   author: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   authorImg: { type: String, required: true },
   date: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now},
+  updatedAt: { type: Date, default: Date.now },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
 });
 

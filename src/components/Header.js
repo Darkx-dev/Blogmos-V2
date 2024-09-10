@@ -1,90 +1,121 @@
 "use client";
+
 import Image from "next/image";
 import React, { useState } from "react";
 import { assets } from "@/assets";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import UserDropdown from "./AdminComponents/UserDropdown";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
-const Header = () => {
-  const [email, setEmail] = useState("");
+export default function Header() {
   const { data: session } = useSession();
+  const [email, setEmail] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
 
-  const onSubmitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("email", email);
-
     try {
-      const response = await axios.post("/api/email", formData);
+      const response = await axios.post("/api/email", { email });
       if (response.data.success) {
-        toast.success(response.data.message);
-        setEmail("");
+        setDialogMessage("Subscription successful!");
       } else {
-        toast.error("Error");
+        setDialogMessage("Error: Subscription failed.");
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      setDialogMessage("Seems like you are already have a subscription");
+    } finally {
+      setIsDialogOpen(true);
+      setEmail("");
     }
   };
 
   return (
-    <header className="py-8 px-5 md:px-12 lg:px-28 bg-gray-200 ">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-1 sm:gap-3 text-base sm:text-2xl font-semibold">
+    <header className="bg-gray-200 px-5 py-8 md:px-12 lg:px-28">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1 text-base font-semibold sm:gap-3 sm:text-2xl">
           <Image
             src={assets.logo}
-            width={180}
+            width={30}
+            height={30}
             alt="Logo"
-            className="w-[25px] sm:w-auto"
+            className="w-[25px] sm:w-[40px]"
           />
-          <a href="/">Blogmos v2</a>
+          <Link href="/">Blogmos v2</Link>
         </div>
         <div className="flex items-center gap-3">
-          {session?.user?.isAdmin ? (
-            <Link
-              href="admin"
-              className="font-medium py-2 px-4 sm:py-3 sm:px-6 bg-black text-white rounded shadow hover:bg-gray-800 transition duration-300"
-            >
-              Welcome admin
-            </Link>
+          {session?.user?.isAdmin && <UserDropdown />}
+          {/* {session?.user?.isAdmin ? (
+            <Button asChild variant="default" className="py-6">
+              <Link href="/admin">Welcome admin</Link>
+            </Button>
           ) : (
-            <button className="flex items-center gap-2 font-medium py-2 px-4 sm:py-3 sm:px-6 bg-black text-white rounded shadow hover:bg-gray-800 transition duration-300">
-              Get Started <Image src={assets.arrow} alt="Arrow" />
-            </button>
-          )}
+            <Button variant="default" className="py-6">
+              Get Started{" "}
+              <Image
+                src={assets.arrow}
+                alt="Arrow"
+                width={16}
+                height={16}
+                className="ml-2"
+              />
+            </Button>
+          )} */}
         </div>
       </div>
-      <div className="text-center my-10">
-        <h1 className="text-4xl sm:text-6xl font-bold text-gray-800">
+      <div className="my-10 text-center">
+        <h1 className="text-4xl font-bold text-gray-800 sm:text-6xl">
           Latest Blogs
         </h1>
-        <p className="mt-4 max-w-[740px] mx-auto text-sm sm:text-base text-gray-600">
+        <p className="mx-auto mt-4 max-w-[740px] text-sm text-gray-600 sm:text-base">
           Discover the latest insights and trends in our blog. Join our
           community and stay updated!
         </p>
         <form
-          className="mt-8 flex flex-row justify-center items-center max-w-[500px] mx-auto"
-          onSubmit={onSubmitHandler}
+          onSubmit={handleSubmit}
+          className="mx-auto mt-8 flex max-w-[500px] flex-row items-center justify-center"
         >
-          <input
+          <Input
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            placeholder="Enter your email"
-            className="flex-1 p-2 sm:py-4 outline-none border-none w-full"
+            className="w-full sm:py-5 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
+            required
           />
-          <button
-            type="submit"
-            className="bg-black text-white py-2 sm:py-4 px-6 sm:px-8 transition duration-300 hover:bg-gray-800"
-          >
+          <Button type="submit" className="rounded-l-none sm:py-5">
             Subscribe
-          </button>
+          </Button>
         </form>
       </div>
+
+      {/* Alert Dialog for notifications */}
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <AlertDialogTrigger asChild>
+          {/* This trigger is hidden but required */}
+          <Button className="hidden" />
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogTitle>Notification</AlertDialogTitle>
+          <AlertDialogDescription>{dialogMessage}</AlertDialogDescription>
+          <div className="flex justify-end gap-4 mt-4">
+            <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
+              Close
+            </AlertDialogCancel>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
   );
-};
-
-export default Header;
+}

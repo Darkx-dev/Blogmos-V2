@@ -1,158 +1,187 @@
 "use client";
-import { assets } from "@/assets";
-import Footer from "@/components/Footer";
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import axios from "axios";
-import DOMPurify from "dompurify";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { notFound } from "next/navigation";
+import DOMPurify from "dompurify";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
-import 'highlight.js/styles/github.css';
 import rehypeHighlight from "rehype-highlight";
-import { notFound } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import { assets } from "@/assets";
+import Footer from "@/components/Footer";
+import "highlight.js/styles/github-dark.css";
+import {
+  IconBrandFacebook,
+  IconBrandGoogle,
+  IconBrandTwitterFilled,
+} from "@tabler/icons-react";
+import UserDropdown from "@/components/AdminComponents/UserDropdown";
 
-const purify = (content) => {
-  const sanitizedContent = DOMPurify.sanitize(content);
-  return sanitizedContent;
-};
+const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
+
+const purify = (content) => DOMPurify.sanitize(content);
 
 const Blog = ({ params }) => {
   const { id } = params;
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-
- const fetchBlogData = async () => {
-  try {
-    const response = await axios.get("/api/blog", {
-      params: { id },
-    });
-    setData(response.data.blog);
-  } catch (error) {
-    // You could set an error state here and display an error message to the user
-    setError("Failed to load blog post. Please try again later.");
-  }
-};
+  const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    fetchBlogData();
-  }, []);
+    const fetchBlogData = async () => {
+      try {
+        const response = await axios.get("/api/blog", { params: { id } });
+        setData(response.data.blog);
+      } catch (error) {
+        setError("Failed to load blog post. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (error) notFound()
+    fetchBlogData();
+  }, [id]);
+
+  if (error) return notFound();
+  if (loading) return <LoadingSkeleton />;
   if (!data) return null;
+
   return (
-    <>
-      <div className="bg-gray-200 py-5 h-1/2 px-5 md:px-12 lg:px-28">
-        <div className="flex justify-between items-center text-lg sm:text-2xl">
-          <Link href={"/"} className="flex items-center gap-1">
-            <Image
-              src={assets.logo}
-              width={180}
-              alt=""
-              className="w-[30px] sm:w-auto"
-            />
-            <span>Blogmos v2</span>
-          </Link>
-          <button className="flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-black shadow-[-7px_7px_0px_#000000]">
-            Get started <Image src={assets.arrow} alt="" />
-          </button>
-        </div>
-        <div className="text-center my-24">
-          <h1 className="text-2xl sm:text-5xl font-semibold max-w-[700px] mx-auto">
-            {data.title}
-          </h1>
-          <Image
-            className="mx-auto mt-6 border border-white rounded-full"
-            src={data.author.profileImg}
-            width={60}
-            height={60}
-            alt=""
-          />
-          <p className="mt-1 pb-2 text-lg max-w-[740px] mx-auto">
-            {data.author.name}
-          </p>
-        </div>
-      </div>
-      <div className="mx-5 max-w-[800px] md:mx-auto mt-[-100px] mb-10">
-        <Image
-          src={data.image}
-          width={1280}
-          height={720}
-          alt=""
-          className="border-4 border-white max-h-[50vh] object-cover"
-        />
-        <p>{data.description}</p>
-        <div className="mt-10">
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw, rehypeHighlight]}
-            components={{
-              img: (props) => {
-                return (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img {...props} alt={props.alt} className="mt-1"/>
-                );
-              },
-              table: (props) => {
-                const { children } = props;
-                return (
-                  <div className="overflow-x-auto mt-1">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      {children}
-                    </table>
-                  </div>
-                );
-              },
-              thead: (props) => (
-                <thead {...props} className="bg-gray-100">
-                  {props.children}
-                </thead>
-              ),
-              tbody: (props) => (
-                <tbody {...props} >
-                  {props.children}
-                </tbody>
-              ),
-              tr: (props) => <tr {...props}  className="border">{props.children}</tr>,
-              th: (props) => (
-                <th {...props} className="border border-black" >
-                  {props.children}
-                </th>
-              ),
-              td: (props) => <td {...props} className="border px-1">{props.children}</td>,
-            }}
-          >
-            {purify(data.content)}
-          </Markdown>
-        </div>
-        <div className="my-24">
-          <p className="text-black font-semibold my-4">
-            Share this article on social media
-          </p>
-          <div className="flex">
-            <Image
-              src={assets.facebook_icon}
-              width={50}
-              height={50}
-              alt=""
-              className="mr-4"
-            />
-            <Image
-              src={assets.twitter_icon}
-              width={50}
-              height={50}
-              alt=""
-              className="mr-4"
-            />
-            <Image src={assets.googleplus_icon} width={50} height={50} alt="" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Header session={session} />
+      <main className="flex-grow">
+        <HeroSection data={data} />
+        <ArticleContent data={data} />
+        <ShareSection />
+      </main>
       <Footer />
-    </>
+    </div>
   );
 };
+
+const Header = ({ session }) => (
+  <header className="bg-gray-200 py-4 px-6 md:px-12">
+    <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <Link href="/" className="flex items-center space-x-2 text-xl font-bold">
+        <Image src={assets.logo} width={40} height={40} alt="Logo" />
+        <span>Blogmos v2</span>
+      </Link>
+      {session?.user?.isAdmin && <UserDropdown />}
+    </div>
+  </header>
+);
+
+const HeroSection = ({ data }) => (
+  <section className="h-[50vh] py-16 px-6 text-center bg-gray-200">
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.title}</h1>
+      <div className="flex items-center justify-center space-x-4">
+        <Image
+          src={data.author.profileImg}
+          width={60}
+          height={60}
+          alt={data.author.name}
+          className="rounded-full border-2 border-gray-300"
+        />
+        <div>
+          <p className="font-semibold">{data.author.name}</p>
+          <p className="text-sm text-gray-600">
+            {new Date(data.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const ArticleContent = ({ data }) => (
+  <article className="max-w-3xl mx-auto px-6 py-12 mt-[-185px]">
+    <Image
+      src={data.image}
+      width={1280}
+      height={720}
+      alt={data.title}
+      className="w-full h-72 object-cover rounded-lg shadow-md mb-8"
+    />
+    <p className="text-xl text-gray-700 mb-8">{data.description}</p>
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw, rehypeHighlight]}
+      components={{
+        img: (props) => (
+          <img
+            {...props}
+            alt={props.alt}
+            className="my-4 rounded-md max-w-full h-auto"
+          />
+        ),
+        table: (props) => (
+          <div className="overflow-x-auto my-4">
+            <table className="min-w-full divide-y divide-gray-200 border">
+              {props.children}
+            </table>
+          </div>
+        ),
+        thead: (props) => (
+          <thead {...props} className="bg-gray-50">
+            {props.children}
+          </thead>
+        ),
+        th: (props) => (
+          <th
+            {...props}
+            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            {props.children}
+          </th>
+        ),
+        td: (props) => (
+          <td {...props} className="px-6 py-4 whitespace-nowrap">
+            {props.children}
+          </td>
+        ),
+      }}
+    >
+      {purify(data.content)}
+    </Markdown>
+  </article>
+);
+
+const ShareSection = () => (
+  <section className="max-w-3xl mx-auto px-6 py-12 border-t border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4">Share this article</h2>
+    <div className="flex space-x-4">
+      {/* {['facebook', 'twitter', 'googleplus'].map((platform) => (
+        <Button key={platform} variant="outline" size="icon">
+          <Image
+            src={assets[`${platform}_icon`]}
+            width={24}
+            height={24}
+            alt={platform}
+          />
+        </Button>
+      ))} */}
+      <IconBrandFacebook size={20} />
+      <IconBrandTwitterFilled size={20} />
+      <IconBrandGoogle size={20} />
+    </div>
+  </section>
+);
+
+const LoadingSkeleton = () => (
+  <div className="max-w-3xl mx-auto px-6 py-12">
+    <Skeleton className="w-full h-64 rounded-lg mb-8" />
+    <Skeleton className="w-3/4 h-10 mb-4" />
+    <Skeleton className="w-full h-6 mb-2" />
+    <Skeleton className="w-full h-6 mb-2" />
+    <Skeleton className="w-2/3 h-6 mb-8" />
+    <Skeleton className="w-full h-40" />
+  </div>
+);
 
 export default Blog;

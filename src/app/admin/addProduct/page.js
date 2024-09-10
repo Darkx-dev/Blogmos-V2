@@ -2,19 +2,19 @@
 import { assets } from "@/assets";
 import axios from "axios";
 import Image from "next/image";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
-import { IconLoader } from "@tabler/icons-react";
-const EditorComponent = dynamic(
-  () => import("@/components/AdminComponents/EditorComponent"),
-  { ssr: false }
-);
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const EditorComponent = dynamic(() => import("@/components/AdminComponents/EditorComponent"), { ssr: false });
 
 const AddProduct = () => {
   const { data: session } = useSession();
-  const [image, setImage] = useState(false);
+  const [image, setImage] = useState(null);
   const [content, setContent] = useState("");
   const [data, setData] = useState({
     title: "",
@@ -26,18 +26,17 @@ const AddProduct = () => {
 
   useEffect(() => {
     if (session?.user) {
-      setData({
-        ...data,
+      setData((prevData) => ({
+        ...prevData,
         author: session.user.name,
         authorImg: session.user.image || "/author_img.png",
-      });
+      }));
     }
   }, [session]);
 
   const onChangeHandler = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setData((data) => ({ ...data, [name]: value }));
+    const { name, value } = e.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const onSubmitHandler = async (e) => {
@@ -47,6 +46,8 @@ const AddProduct = () => {
       return;
     }
     submitButtonRef.current.disabled = true;
+    submitButtonRef.current.textContent = "Posting";
+
     const formData = new FormData();
     formData.append("image", image);
     formData.append("title", data.title);
@@ -69,6 +70,7 @@ const AddProduct = () => {
         onClose: () => {
           response.then((res) => {
             if (res.data.blog) {
+              submitButtonRef.current.textContent = "Posted";
               window.location.href = `/blogs/${res.data.blog._id}`;
             }
           });
@@ -78,68 +80,73 @@ const AddProduct = () => {
   };
 
   return (
-    <form className="pt-5 px-5 sm:pt-12 sm:pl-16" onSubmit={onSubmitHandler}>
-      <p className="text-xl">Upload thumbnail</p>
-      <label htmlFor="image">
-        <Image
-          className="mt-4 aspect-video w-[180px] object-cover"
-          src={!image ? assets.upload_area : URL.createObjectURL(image)}
-          alt=""
-          width={140}
-          height={70}
-          onChange={onChangeHandler}
+    <form className="p-5 sm:p-12" onSubmit={onSubmitHandler}>
+      <div className="mb-6">
+        <p className="text-xl font-semibold">Upload thumbnail</p>
+        <label htmlFor="image" className="block mt-4 cursor-pointer">
+          <Image
+            className="w-auto h-auto object-cover mb-4"
+            src={image ? URL.createObjectURL(image) : assets.upload_area}
+            alt="Upload Area"
+            width={500}
+            height={250}
+          />
+        </label>
+        <Input
+          type="file"
+          id="image"
+          name="image"
+          hidden
+          required
+          onChange={(e) => setImage(e.target.files[0])}
         />
-      </label>
-      <input
-        type="file"
-        id="image"
-        name="image"
-        hidden
-        required
-        onChange={(e) => setImage(e.target.files[0])}
-      />
-      <p className="mt-4 text-xl">Blog title</p>
-      <input
-        type="text"
-        className="w-full sm:w-[500px] mt-4 px-4 py-3 border "
-        name="title"
-        placeholder="Type here"
-        onChange={onChangeHandler}
-        value={data.title}
-        required
-      />
-      <p className="mt-4 text-xl">Blog description</p>
-      <input
-        className="w-full sm:w-[500px] mt-4 px-4 py-3 border "
-        name="description"
-        placeholder="Write Description here"
-        onChange={onChangeHandler}
-        value={data.description}
-        required
-      />
-      <p className="mt-4 text-xl">Blog Content</p>
-      {/* <Suspense fallback={() => <IconLoader />}> */}
-      <EditorComponent markdown={content} setContent={setContent} />
-      {/* </Suspense> */}
-      <p className="text-xl mt-4">Blog Category</p>
-      <select
-        className="w-40 mt-4 px-4 py-3 border text-gray-500"
-        name="category"
-        onChange={onChangeHandler}
-        value={data.category}
-      >
-        <option value="Startup">Startup</option>
-        <option value="Technology">Technology</option>
-        <option value="Lifestyle">Lifestyle</option>
-      </select>
-      <br />
-      <button
+      </div>
+      <div className="mb-6">
+        <p className="text-xl font-semibold">Blog title</p>
+        <Input
+          type="text"
+          name="title"
+          placeholder="Type here"
+          onChange={onChangeHandler}
+          value={data.title}
+          required
+        />
+      </div>
+      <div className="mb-6">
+        <p className="text-xl font-semibold">Blog description</p>
+        <Input
+          type="text"
+          name="description"
+          placeholder="Write Description here"
+          onChange={onChangeHandler}
+          value={data.description}
+          required
+        />
+      </div>
+      <div className="mb-6">
+        <p className="text-xl font-semibold">Blog Content</p>
+        <EditorComponent markdown={content} setContent={setContent} />
+      </div>
+      <div className="mb-6">
+        <p className="text-xl font-semibold">Blog Category</p>
+        <Select value={data.category} onValueChange={(value) => setData((prevData) => ({ ...prevData, category: value }))}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Startup">Startup</SelectItem>
+            <SelectItem value="Technology">Technology</SelectItem>
+            <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Button
         ref={submitButtonRef}
         type="submit"
-        className="mt-8 w-40 h-12 bg-black text-white"
+        className="w-full h-12 bg-black text-white"
       >
         Add
-      </button>
+      </Button>
     </form>
   );
 };

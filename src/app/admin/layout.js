@@ -1,5 +1,6 @@
 "use client";
 import SidebarAdmin from "@/components/AdminComponents/Sidebar";
+import UserDropdown from "@/components/AdminComponents/UserDropdown";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,15 +24,7 @@ const Layout = ({ children }) => {
           <div className="flex justify-between px-4 md:px-8 items-center py-3 w-full max-h-[60px] border-b border-black">
             <h5 className="font-medium"></h5>
             <div className="flex items-center">
-              <Link href="/admin/profile">
-                <Image
-                  src={session?.user?.image}
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
-              </Link>
+              <UserDropdown />
               <div className="hidden max-md:flex">
                 <SidebarAdmin />
               </div>

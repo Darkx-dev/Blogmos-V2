@@ -5,10 +5,11 @@ import {
   DesktopSidebar,
   MobileSidebar,
   SidebarLink,
-} from "@/components/ui/sidebar"; // Adjust the import based on the actual library structure
+} from "@/components/ui/sidebar";
 import Image from "next/image";
-import { assets } from "@/assets"; // Adjust the path based on your project structure
+import { assets } from "@/assets"; 
 import { usePathname } from "next/navigation";
+import { IconList, IconMailHeart, IconPlus } from "@tabler/icons-react";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
@@ -19,17 +20,17 @@ const Sidebar = () => {
     {
       label: "Add Blogs",
       href: "/admin/addProduct",
-      icon: <Image src={assets.add_icon} width={24} alt="Add Blog Icon" />,
+      icon: <IconPlus size={20} />,
     },
     {
       label: "Blog List",
       href: "/admin/blogList",
-      icon: <Image src={assets.blog_icon} width={24} alt="Blog List Icon" />,
+      icon: <IconList size={20} />,
     },
     {
       label: "Subscribers",
       href: "/admin/subscribers",
-      icon: <Image src={assets.email_icon} width={24} alt="Subscribers Icon" />,
+      icon: <IconMailHeart size={20} />,
     },
   ];
 
@@ -46,7 +47,9 @@ const Sidebar = () => {
             className="*:text-xl pl-2 font-semibold"
           />
         </div>
-        <div className={`flex-1 flex-grow flex flex-col py-10 *:px-4 bg-gray-200 `}>
+        <div
+          className={`flex-1 flex-grow flex flex-col py-10 *:px-4 bg-gray-200 `}
+        >
           {links.map((link, index) => {
             const isActive = pathname === link.href;
             return (
@@ -72,7 +75,10 @@ const Sidebar = () => {
             className="*:text-xl pl-2"
           />
         </div>
-        <div className={`flex flex-col px-5 mt-10`} onClick={() => setOpen(!open)}>
+        <div
+          className={`flex flex-col px-5 mt-10`}
+          onClick={() => setOpen(!open)}
+        >
           {links.map((link, index) => {
             const isActive = pathname === link.href;
             return (

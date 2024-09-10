@@ -27,7 +27,6 @@ export const { handlers, auth } = NextAuth({
           token.isAdmin = user.isAdmin;
           token._id = user._id;
         }
-        console.log(token);
       }
       return token;
     },
@@ -42,12 +41,10 @@ export const { handlers, auth } = NextAuth({
         await ConnectDB();
         const existingUser = await UserModel.findOne({ email: profile.email });
         if (existingUser) {
-          console.log("EXISTING USER", existingUser);
           existingUser.name = profile.name;
           existingUser.profileImg = profile.picture;
           await existingUser.save();
         } else {
-          console.log(account);
           await UserModel.create({
             name: profile.name,
             email: profile.email,
@@ -63,9 +60,11 @@ export const { handlers, auth } = NextAuth({
   },
   pages: {
     error: "/error",
+    signIn: "/login",
+    signOut: "/logout",
   },
   theme: {
-    colorScheme: "auto",
+    colorScheme: "light",
     brandColor: "#ffffff",
     buttonText: "Login",
     logo: "https://inspiredcoder.vercel.app/_next/image?url=%2Flogo.png&w=64&q=75",
