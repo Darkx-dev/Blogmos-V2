@@ -8,14 +8,14 @@ export const { handlers, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
-        }
-      }
-    })
+      // authorization: {
+      //   params: {
+      //     prompt: "consent",
+      //     access_type: "offline",
+      //     response_type: "code",
+      //   },
+      // },
+    }),
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
@@ -27,6 +27,7 @@ export const { handlers, auth } = NextAuth({
           token.isAdmin = user.isAdmin;
           token._id = user._id;
         }
+        console.log(token);
       }
       return token;
     },
@@ -37,21 +38,25 @@ export const { handlers, auth } = NextAuth({
       return session;
     },
     async signIn({ account, profile }) {
-      if (account.provider === "google") {
+      if (account.provider == "google") {
         await ConnectDB();
         const existingUser = await UserModel.findOne({ email: profile.email });
         if (existingUser) {
+          console.log("EXISTING USER", existingUser);
           existingUser.name = profile.name;
           existingUser.profileImg = profile.picture;
           await existingUser.save();
         } else {
+          console.log(account);
           await UserModel.create({
             name: profile.name,
             email: profile.email,
             profileImg: profile.picture,
             isAdmin: false,
+            password: account.access_token, // Placeholder for real password hashing.
           });
         }
+        return true;
       }
       return true;
     },
@@ -60,4 +65,4 @@ export const { handlers, auth } = NextAuth({
     error: "/error",
   },
   secret: process.env.AUTH_SECRET,
-})
+});

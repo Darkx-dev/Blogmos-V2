@@ -37,11 +37,11 @@ const BlogList = () => {
             {blogs.map((blog, index) => (
               <BlogTableItem
                 key={index}
-                mongoId={blog._id}
-                title={blog.title}
-                author={blog.author.name}
-                authorImg={blog.author?.profileImg}
-                date={blog.date}
+                mongoId={blog?._id}
+                title={blog?.title}
+                author={blog.author?.name}
+                authorImg={blog?.author?.profileImg}
+                date={blog?.date}
                 revalidate={fetchBlogs}
               />
             ))}

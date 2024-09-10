@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import React, { useState } from "react";
 import { assets } from "@/assets";
@@ -73,11 +73,11 @@ const Header = () => {
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="Enter your email"
-            className="flex-1 p-4 outline-none border-none w-full"
+            className="flex-1 p-2 sm:py-4 outline-none border-none w-full"
           />
           <button
             type="submit"
-            className="bg-black text-white py-4 px-6 sm:px-8 transition duration-300 hover:bg-gray-800"
+            className="bg-black text-white py-2 sm:py-4 px-6 sm:px-8 transition duration-300 hover:bg-gray-800"
           >
             Subscribe
           </button>

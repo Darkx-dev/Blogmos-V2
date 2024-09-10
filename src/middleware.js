@@ -7,9 +7,10 @@ export const config = {
 
 export default async function middleware(req) {
   // Allow the request to continue
-  const session = await getToken({ req: req, secret: process.env.AUTH_SECRET })
-  if (!session || !session?.user?.isAdmin) {
-    return NextResponse.redirect(new URL("/api/auth/signin", req.url));
+  const session = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  console.log(session);
+  if (session || session?.user?.isAdmin) {
+    return NextResponse.next();
   }
-  return NextResponse.next();
+  return NextResponse.redirect(new URL("/api/auth/signin", req.url));
 }
