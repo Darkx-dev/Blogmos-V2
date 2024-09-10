@@ -64,6 +64,11 @@ export const { handlers, auth } = NextAuth({
   pages: {
     error: "/error",
   },
-  trustHost: true,
+  theme: {
+    colorScheme: "auto",
+    brandColor: "#ffffff",
+    buttonText: "Login",
+    logo: "https://inspiredcoder.vercel.app/_next/image?url=%2Flogo.png&w=64&q=75",
+  },
   secret: process.env.AUTH_SECRET,
 });

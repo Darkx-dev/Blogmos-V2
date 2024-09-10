@@ -2,7 +2,7 @@
 import { assets } from "@/assets";
 import axios from "axios";
 import Image from "next/image";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
@@ -22,6 +22,7 @@ const AddProduct = () => {
     category: "Startup",
     authorImg: "/author_img.png",
   });
+  const submitButtonRef = useRef(null);
 
   useEffect(() => {
     if (session?.user) {
@@ -41,6 +42,11 @@ const AddProduct = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    if (!image) {
+      toast.error("Please upload an image");
+      return;
+    }
+    submitButtonRef.current.disabled = true;
     const formData = new FormData();
     formData.append("image", image);
     formData.append("title", data.title);
@@ -59,7 +65,7 @@ const AddProduct = () => {
         error: "Failed, try again",
       },
       {
-        autoClose: 1000,
+        autoClose: 800,
         onClose: () => {
           response.then((res) => {
             if (res.data.blog) {
@@ -127,7 +133,11 @@ const AddProduct = () => {
         <option value="Lifestyle">Lifestyle</option>
       </select>
       <br />
-      <button type="submit" className="mt-8 w-40 h-12 bg-black text-white">
+      <button
+        ref={submitButtonRef}
+        type="submit"
+        className="mt-8 w-40 h-12 bg-black text-white"
+      >
         Add
       </button>
     </form>
