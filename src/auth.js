@@ -1,68 +1,63 @@
-import NextAuth, { CredentialsSignin } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import UserModel from "./lib/models/UserModel";
 import ConnectDB from "./lib/config/db";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth } = NextAuth({
   providers: [
-    Credentials({
-      credentials: {
-        email: {},
-        password: {},
-      },
-      authorize: async (credentials) => {
-        await ConnectDB();
-        let user = null;
-        user = await UserModel.findOne({ email: credentials.email });
-        console.log(user);
-        if (!user) {
-          throw new CredentialsSignin("User not found");
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
         }
-        const isPasswordValid = bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-        console.log(credentials.password);
-        if (!isPasswordValid) {
-          throw new CredentialsSignin("Invalid password");
-        }
-        return user;
-      },
-    }),
+      }
+    })
   ],
-  pages: {
-    // signIn: "/login",
-    // signOut: "/signout",
-    // newUser: "/register",
-    error: "/error",
-  },
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token._id = user._id;
-        token.email = user.email;
-        token.username = user.username;
-        token.name = user.name;
-        token.password = user.password;
-        token.isAdmin = user.isAdmin;
+    async jwt({ token, account, profile }) {
+      if (account?.provider === "google") {
+        token.accessToken = account.access_token;
+        await ConnectDB();
+        const user = await UserModel.findOne({ email: profile.email });
+        if (user) {
+          token.isAdmin = user.isAdmin;
+          token._id = user._id;
+        }
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user._id = token._id;
-        session.user.email = token.email;
-        session.user.username = token.username;
-        session.user.name = token.name;
-        session.user.isAdmin = token.isAdmin;
-        session.user.password = token.password;
-      }
+      session.user._id = token._id;
+      session.user.isAdmin = token.isAdmin;
+      session.accessToken = token.accessToken;
       return session;
     },
+    async signIn({ account, profile }) {
+      if (account.provider === "google") {
+        await ConnectDB();
+        const existingUser = await UserModel.findOne({ email: profile.email });
+        if (existingUser) {
+          existingUser.name = profile.name;
+          existingUser.profileImg = profile.picture;
+          await existingUser.save();
+        } else {
+          await UserModel.create({
+            name: profile.name,
+            email: profile.email,
+            profileImg: profile.picture,
+            isAdmin: false,
+          });
+        }
+      }
+      return true;
+    },
+  },
+  pages: {
+    error: "/error",
   },
   secret: process.env.AUTH_SECRET,
-});
+})

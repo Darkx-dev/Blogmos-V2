@@ -24,11 +24,13 @@ const AddProduct = () => {
   });
 
   useEffect(() => {
-    setData({
-      ...data,
-      author: session?.user?.name,
-      authorId: session?.user?._id,
-    });
+    if (session?.user) {
+      setData({
+        ...data,
+        author: session.user.name,
+        authorImg: session.user.image || "/author_img.png",
+      });
+    }
   }, [session]);
 
   const onChangeHandler = (e) => {

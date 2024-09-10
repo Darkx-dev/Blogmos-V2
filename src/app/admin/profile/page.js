@@ -8,14 +8,14 @@ const ProfilePage = () => {
   const { data: session, status, update } = useSession();
   const [fieldData, setFieldData] = useState({
     name: "",
-    email: "",
+    // email: "",
   });
 
   useEffect(() => {
     if (session?.user) {
       setFieldData({
         name: session.user.name || "",
-        email: session.user.email || "",
+        // email: session.user.email || "",
       });
     }
   }, [session]);
@@ -34,7 +34,6 @@ const ProfilePage = () => {
       const response = await axios.patch("/api/profile", {
         ...fieldData,
         id: session?.user?._id,
-        password: session?.user?.password,
       });
 
       if (response.data.success) {
@@ -61,7 +60,7 @@ const ProfilePage = () => {
         />
       </div>
 
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
           type="email"
@@ -70,7 +69,7 @@ const ProfilePage = () => {
           onChange={handleInputChange}
           className="mt-1 block w-full border rounded-md py-2 px-3"
         />
-      </div>
+      </div> */}
 
       <div className="mt-6 flex justify-end">
         <button
