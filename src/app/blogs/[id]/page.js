@@ -42,10 +42,14 @@ const Blog = ({ params }) => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
-    fetchBlogData();
+    const timer = setTimeout(() => {
+      fetchBlogData();
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [fetchBlogData]);
 
   if (error) return notFound();

@@ -17,6 +17,7 @@ import {
   AlertDialogDescription,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import ThemeToggle from "./ThemeToggle.js"
 
 export default function Header() {
   const { data: session } = useSession();
@@ -56,6 +57,7 @@ export default function Header() {
         </div>
         <div className="flex items-center gap-3">
           {session?.user?.isAdmin && <UserDropdown />}
+            <ThemeToggle/>
           {/* {session?.user?.isAdmin ? (
             <Button asChild variant="default" className="py-6">
               <Link href="/admin">Welcome admin</Link>

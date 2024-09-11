@@ -1,6 +1,7 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+import ThemeProviderSystem from "@/components/ThemeProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -9,14 +10,24 @@ const outfit = Outfit({
 
 export const metadata = {
   title: "Blog App",
-  description: "Dev : Roshan"
+  description: "Dev : Roshan",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.className} antialiased`}>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          {" "}
+          <ThemeProviderSystem
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProviderSystem>
+        </SessionProvider>
       </body>
     </html>
   );
