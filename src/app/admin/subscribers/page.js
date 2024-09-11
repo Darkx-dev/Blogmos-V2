@@ -91,7 +91,7 @@ const Subscribers = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {subscribers.map((subscriber) => (
+            {subscribers && subscribers.map((subscriber) => (
               <TableRow key={subscriber._id}>
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell className="hidden sm:block">{format(new Date(subscriber.date), 'MMM dd, yyyy')}</TableCell>
