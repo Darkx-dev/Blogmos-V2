@@ -19,27 +19,26 @@ export async function GET(request) {
     const limit = parseInt(request.nextUrl.searchParams.get("limit")) || 10;
     const query = request.nextUrl.searchParams.get("query");
 
-    let filter = {};
+    const options = {
+      page,
+      limit,
+      sort: {
+        createdAt: -1,
+      },
+    };
+
     if (query) {
       const searchRegex = new RegExp(query, "i");
-      filter.email = searchRegex;
+      const result = await EmailModel.paginate({ email: searchRegex }, options);
+      return NextResponse.json(result);
     }
 
-    const skip = (page - 1) * limit;
-    const totalSubscribers = await EmailModel.countDocuments(filter);
-    const totalPages = Math.ceil(totalSubscribers / limit);
+    const result = await EmailModel.paginate({}, options);
+    if (!result) {
+      return NextResponse.json({ message: "Email not found" }, { status: 404 });
+    }
 
-    const subscribers = await EmailModel.find(filter)
-      .skip(skip)
-      .limit(limit)
-      .sort({ date: -1 });
-
-    return NextResponse.json({
-      subscribers,
-      currentPage: page,
-      totalPages,
-      totalSubscribers,
-    });
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error in GET request:", error);
     return NextResponse.json(

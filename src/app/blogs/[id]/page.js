@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import dynamic from "next/dynamic";
@@ -32,20 +32,21 @@ const Blog = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 
-  useEffect(() => {
-    const fetchBlogData = async () => {
-      try {
-        const response = await axios.get("/api/blog", { params: { id } });
-        setData(response.data.blog);
-      } catch (error) {
-        setError("Failed to load blog post. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogData();
+  const fetchBlogData = useCallback(async () => {
+    try {
+      const response = await axios.get("/api/blog", { params: { id } });
+      console.log(response.data.blog);
+      setData(response.data.blog);
+    } catch (error) {
+      setError("Failed to load blog post. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    fetchBlogData();
+  }, [fetchBlogData]);
 
   if (error) return notFound();
   if (loading) return <LoadingSkeleton />;
@@ -77,7 +78,7 @@ const Header = ({ session }) => (
 );
 
 const HeroSection = ({ data }) => (
-  <section className="h-[50vh] py-16 px-6 text-center bg-gray-200">
+  <section className="py-16 px-6 text-center bg-gray-200">
     <div className="max-w-4xl mx-auto">
       <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.title}</h1>
       <div className="flex items-center justify-center space-x-4">
@@ -100,7 +101,7 @@ const HeroSection = ({ data }) => (
 );
 
 const ArticleContent = ({ data }) => (
-  <article className="max-w-3xl mx-auto px-6 py-12 mt-[-185px]">
+  <article className="max-w-3xl mx-auto px-6 py-12">
     <Image
       src={data.image}
       width={1280}

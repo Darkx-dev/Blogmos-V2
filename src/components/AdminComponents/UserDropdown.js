@@ -24,10 +24,10 @@ const UserDropdown = () => {
           alt=""
           width={25}
           height={25}
-          className="w-auto rounded-full cursor-pointer hover:border-black hover:scale-[1.1] transition-all border-1 border-transparent"
+          className="w-[30px] rounded-full cursor-pointer hover:border-black hover:scale-[1.1] transition-all border-1 border-transparent"
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent  align="end" className="translate-y-3">
         <DropdownMenuLabel>{session?.user?.email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

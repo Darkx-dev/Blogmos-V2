@@ -2,17 +2,17 @@
 import SidebarAdmin from "@/components/AdminComponents/Sidebar";
 import UserDropdown from "@/components/AdminComponents/UserDropdown";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
+import { notFound } from "next/navigation";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Layout = ({ children }) => {
   const { data: session } = useSession();
-  if (!session) return <h1>NOT AUTHORIZED</h1>;
+  if (!session) return null;
+  if (session && !session?.user?.isAdmin) notFound();
   else if (session && !session?.user?.isAdmin)
-    return <h1>ASK OWNER FOR ASSISTANCE</h1>;
+    return <h1>YOU ARE NOT ADMIN</h1>;
   else
     return (
       <div className="flex min-h-screen">

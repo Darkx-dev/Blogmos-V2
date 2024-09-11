@@ -3,6 +3,7 @@ import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,15 @@ export default function Login() {
     }
   };
   if (session?.user?.isAdmin) {
-    return <h1>Already Logged as : {session?.user?.name}</h1>;
+    return (
+      <h4 className="text-center">
+        Logged as {session?.user?.name}
+        <br />
+        <Link href="/admin/blogList">
+          <Button>Admin Panel</Button>
+        </Link>
+      </h4>
+    );
   }
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

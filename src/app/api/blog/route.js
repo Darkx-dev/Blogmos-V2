@@ -22,13 +22,22 @@ export async function GET(request) {
     const limit = parseInt(request.nextUrl.searchParams.get("limit")) || 10;
     const query = request.nextUrl.searchParams.get("query");
 
+    const options = {
+      page,
+      limit,
+      sort: {
+        createdAt: -1,
+      },
+      populate: {
+        path: "author",
+        select: "name profileImg",
+      },
+    };
+
     if (query) {
       const searchRegex = new RegExp(query, "i");
-      const blogs = await BlogModel.find({ title: searchRegex }).populate(
-        "author",
-        "name profileImg"
-      );
-      return NextResponse.json({ blogs });
+      const result = await BlogModel.paginate({ title: searchRegex }, options);
+      return NextResponse.json(result);
     }
 
     if (blogId) {
@@ -39,10 +48,7 @@ export async function GET(request) {
         );
       }
 
-      const blog = await BlogModel.findById(blogId).populate(
-        "author",
-        "name profileImg"
-      );
+      const blog = await BlogModel.findById(blogId).populate("author", "name profileImg")
       if (!blog) {
         return NextResponse.json(
           { message: "Blog not found" },
@@ -52,22 +58,9 @@ export async function GET(request) {
       return NextResponse.json({ blog });
     }
 
-    const skip = (page - 1) * limit;
-    const totalBlogs = await BlogModel.countDocuments();
-    const totalPages = Math.ceil(totalBlogs / limit);
+    const result = await BlogModel.paginate({}, options);
 
-    const blogs = await BlogModel.find({})
-      .populate("author", "name profileImg")
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
-
-    return NextResponse.json({
-      blogs,
-      currentPage: page,
-      totalPages,
-      totalBlogs,
-    });
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error in GET request:", error);
     return NextResponse.json(

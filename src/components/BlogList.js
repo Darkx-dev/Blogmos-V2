@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
+"use client"
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import BlogItem from "./BlogItem";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -20,60 +21,56 @@ const BlogList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
   const ITEMS_PER_PAGE = 6;
 
   // Fetch blogs with pagination and search query
-  const fetchBlogs = async (page, query = "") => {
+  const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `/api/blog?page=${page}&limit=${ITEMS_PER_PAGE}&query=${query}`
-      );
-      setBlogs(response.data.blogs);
+      const response = await axios.get("/api/blog", {
+        params: {
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          query: searchQuery,
+          category: menu !== "All" ? menu : undefined,
+        },
+      });
+      setBlogs(response.data.docs);
       setTotalPages(response.data.totalPages);
-      setCurrentPage(response.data.currentPage);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, searchQuery, menu]);
 
-  // Initial fetch
+  // Fetch blogs when dependencies change
   useEffect(() => {
-    fetchBlogs(1);
-  }, []);
+    const timer = setTimeout(() => {
+      fetchBlogs();
+    }, 500); // 300ms debounce
 
-  // Update debounced query
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 1000); // 1 second debounce
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery]);
-
-  // Fetch blogs when debounced query changes
-  useEffect(() => {
-    fetchBlogs(1, debouncedQuery);
-  }, [debouncedQuery]);
-
-  // Filter blogs based on the selected category
-  const filteredBlogs = useMemo(() => {
-    return blogs.filter((blog) =>
-      menu === "All" ? true : blog.category === menu
-    );
-  }, [blogs, menu]);
+    return () => clearTimeout(timer);
+  }, [fetchBlogs]);
 
   // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      fetchBlogs(newPage, debouncedQuery);
+      setCurrentPage(newPage);
     }
+  };
+
+  // Handle category change
+  const handleCategoryChange = (category) => {
+    setMenu(category);
+    setCurrentPage(1);
+  };
+
+  // Handle search query change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
   };
 
   // Format date
@@ -82,38 +79,35 @@ const BlogList = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const categories = useMemo(() => ["All", "Technology", "Startup", "Lifestyle"], []);
+
   return (
-    <div className="container mx-auto px-4 py-8 ">
+    <div className="container mx-auto px-4 py-8">
       {/* Menu Section */}
-      <div className="flex items-center justify-between gap-4 mb-10">
-        <div className="flex flex-wrap items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center">
-                <Filter className="h-4 w-4 mr-2" />
-                {menu}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
-              {["All", "Technology", "Startup", "Lifestyle"].map((category) => (
-                <DropdownMenuItem
-                  key={category}
-                  onClick={() => {
-                    setMenu(category);
-                    fetchBlogs(1, debouncedQuery);
-                  }}
-                >
-                  {category}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="flex items-center w-full sm:w-auto">
+              <Filter className="h-4 w-4 mr-2" />
+              {menu}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
+            {categories.map((category) => (
+              <DropdownMenuItem
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+              >
+                {category}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Input
           placeholder="Search for blogs"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           type="text"
           name="query"
           className="sm:py-5 sm:max-w-[400px] w-full focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -129,8 +123,8 @@ const BlogList = () => {
             .map((_, index) => (
               <Skeleton key={index} className="w-full h-[300px]" />
             ))
-        ) : filteredBlogs.length > 0 ? (
-          filteredBlogs.map((blog) => (
+        ) : blogs.length > 0 ? (
+          blogs.map((blog) => (
             <BlogItem
               key={blog._id}
               id={blog._id}
@@ -148,7 +142,7 @@ const BlogList = () => {
       </div>
 
       {/* Pagination */}
-      {!loading && filteredBlogs.length > 0 && (
+      {!loading && blogs.length > 0 && (
         <div className="flex justify-center items-center space-x-2">
           <Button
             variant="outline"
