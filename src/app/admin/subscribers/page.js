@@ -90,14 +90,14 @@ const Subscribers = () => {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">All Subscribers</h2>
+        <h2 className="text-xl font-bold dark:text-white">All Subscribers</h2>
         <Input
           placeholder="Search for subscribers"
           value={searchQuery}
           onChange={handleSearch}
           type="text"
           name="query"
-          className="w-full sm:py-5 max-w-[400px] rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
+          className="w-full sm:py-5 max-w-[400px] focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
         />
       </div>
       <div className="rounded-md">

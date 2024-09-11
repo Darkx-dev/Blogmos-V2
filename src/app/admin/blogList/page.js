@@ -60,7 +60,7 @@ const BlogList = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchBlogs();
-    }, 500); 
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [fetchBlogs]);
@@ -93,14 +93,14 @@ const BlogList = () => {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">All Blogs</h2>
+        <h2 className="text-xl font-bold dark:text-white">All Blogs</h2>
         <Input
           placeholder="Search for blogs"
           value={searchQuery}
           onChange={handleSearch}
           type="text"
           name="query"
-          className="w-full sm:py-5 max-w-[400px] rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
+          className="w-full sm:py-5 max-w-[400px] focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
         />
       </div>
       {isLoading ? (
@@ -122,15 +122,24 @@ const BlogList = () => {
                   <TableCell className="font-medium">
                     <div className="flex items-center space-x-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={blog.author?.profileImg} alt={blog.author?.name} />
-                        <AvatarFallback>{blog.author?.name?.charAt(0) || 'U'}</AvatarFallback>
+                        <AvatarImage
+                          src={blog.author?.profileImg}
+                          alt={blog.author?.name}
+                        />
+                        <AvatarFallback>
+                          {blog.author?.name?.charAt(0) || "U"}
+                        </AvatarFallback>
                       </Avatar>
-                      <span className="hidden sm:block text-nowrap">{blog.author?.name || 'Unknown'}</span>
+                      <span className="hidden sm:block text-nowrap">
+                        {blog.author?.name || "Unknown"}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>{blog.title}</TableCell>
                   <TableCell className="hidden sm:table-cell">
-                    {blog.createdAt ? format(new Date(blog.createdAt), 'MMM dd, yyyy') : 'N/A'}
+                    {blog.createdAt
+                      ? format(new Date(blog.createdAt), "MMM dd, yyyy")
+                      : "N/A"}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -142,8 +151,12 @@ const BlogList = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleDelete(blog._id)}>
-                          <p className="hover:text-red-500 w-full h-full">Delete</p>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(blog._id)}
+                        >
+                          <p className="hover:text-red-500 w-full h-full">
+                            Delete
+                          </p>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

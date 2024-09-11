@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import BlogItem from "./BlogItem";
 import axios from "axios";
@@ -63,6 +63,7 @@ const BlogList = () => {
 
   // Handle category change
   const handleCategoryChange = (category) => {
+    console.log("Handle category change : " + category);
     setMenu(category);
     setCurrentPage(1);
   };
@@ -79,15 +80,21 @@ const BlogList = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const categories = useMemo(() => ["All", "Technology", "Startup", "Lifestyle"], []);
+  const categories = useMemo(
+    () => ["All", "Technology", "Startup", "Lifestyle"],
+    []
+  );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-10 py-8">
       {/* Menu Section */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center w-full sm:w-auto">
+            <Button
+              variant="outline"
+              className="flex items-center w-full sm:w-auto"
+            >
               <Filter className="h-4 w-4 mr-2" />
               {menu}
             </Button>
@@ -116,28 +123,32 @@ const BlogList = () => {
       </div>
 
       {/* Blog Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 min-h-[50vh]">
+      <div className="mb-8 min-h-[50vh]">
         {loading ? (
-          Array(ITEMS_PER_PAGE)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} className="w-full h-[300px]" />
-            ))
+          <div className="columns-sm space-y-6 gap-6">
+            {Array(ITEMS_PER_PAGE)
+              .fill(0)
+              .map((_, index) => (
+                <Skeleton key={index} className="w-full h-[300px]" />
+              ))}
+          </div>
         ) : blogs.length > 0 ? (
-          blogs.map((blog) => (
-            <BlogItem
-              key={blog._id}
-              id={blog._id}
-              title={blog.title}
-              description={blog.description}
-              image={blog.image}
-              category={blog.category}
-              createdAt={formatDate(blog.createdAt)}
-              updatedAt={formatDate(blog.updatedAt)}
-            />
-          ))
+          <div className="columns-sm space-y-6 gap-6">
+            {blogs.map((blog) => (
+              <BlogItem
+                key={blog._id}
+                id={blog._id}
+                title={blog.title}
+                description={blog.description}
+                image={blog.image}
+                category={blog.category}
+                createdAt={formatDate(blog.createdAt)}
+                updatedAt={formatDate(blog.updatedAt)}
+              />
+            ))}
+          </div>
         ) : (
-          <p className="col-span-full text-center text-lg">No blogs found.</p>
+          <p className="text-center text-lg">No blogs found.</p>
         )}
       </div>
 

@@ -24,7 +24,7 @@ const EditorComponent = ({ markdown, editorRef, setContent }) => {
       onChange={setContent}
       ref={editorRef}
       markdown={markdown}
-      contentEditableClassName="bg-[#00000006]"
+      contentEditableClassName="bg-[#00000006] dark:text-white"
       placeholder="Write something"
       plugins={[
         toolbarPlugin({

@@ -37,8 +37,8 @@ const Sidebar = () => {
   return (
     <SidebarProvider open={open} setOpen={setOpen}>
       <DesktopSidebar className="shadow-lg min-h-screen h-full">
-        <div className="flex items-center pl-2 h-[60px] bg-gray-200">
-          <Image src={assets.logo} width={40} alt="Logo" />
+        <div className="flex items-center pl-2 h-[60px]">
+          <Image src={assets.logo} width={40} alt="Logo" className="dark:invert"/>
           <SidebarLink
             link={{
               href: "/",
@@ -48,7 +48,7 @@ const Sidebar = () => {
           />
         </div>
         <div
-          className={`flex-1 flex-grow flex flex-col py-10 *:px-4 bg-gray-200 `}
+          className={`flex-1 flex-grow flex flex-col py-10 *:px-4 `}
         >
           {links.map((link, index) => {
             const isActive = pathname === link.href;
@@ -57,14 +57,14 @@ const Sidebar = () => {
                 key={index}
                 link={link}
                 className={`my-1 h-16 *:text-lg ${
-                  isActive ? "invert bg-white" : ""
+                  isActive? "invert bg-white dark:bg-black" : ""
                 }`}
               />
             );
           })}
         </div>
       </DesktopSidebar>
-      <MobileSidebar className="bg-gray-100 shadow-lg justify-start p-0">
+      <MobileSidebar className=" shadow-lg justify-start p-0">
         <div className="flex items-center gap-3 text-2xl px-4 py-4 border-b border-gray-300">
           <Image src={assets.logo} width={50} alt="Logo" />
           <SidebarLink

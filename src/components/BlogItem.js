@@ -1,21 +1,35 @@
 import React from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 
-const BlogItem = ({ id, title, category, description, image, createdAt, updatedAt }) => {
+const BlogItem = ({
+  id,
+  title,
+  category,
+  description,
+  image,
+  createdAt,
+  updatedAt,
+}) => {
   return (
-    <Card className="group overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300">
+    <Card className="group overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300" >
       <Link href={`/blogs/${id}`}>
         <div className="relative h-48 overflow-hidden">
           <Image
+            priority
             src={image}
             alt={title}
-            layout="fill"
-            objectFit="cover"
-            className="group-hover:scale-105 transition-transform duration-300"
+            width={200}
+            height={150}
+            className="group-hover:scale-105 w-full h-full transition-transform duration-300 object-cover"
           />
           <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-opacity duration-300" />
           <span className="absolute top-4 left-4 bg-white text-black text-xs font-semibold px-2 py-1 rounded-full">
@@ -29,9 +43,7 @@ const BlogItem = ({ id, title, category, description, image, createdAt, updatedA
         </h3>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600 line-clamp-3 mb-4">
-          {description}
-        </p>
+        <p className="text-sm text-gray-600 line-clamp-3 mb-4">{description}</p>
         <div className="flex items-center text-xs text-gray-500 space-x-4">
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-1" />

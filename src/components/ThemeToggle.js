@@ -1,5 +1,5 @@
 "use client";
-import { Moon, Sun } from "lucide-react";
+import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import {
@@ -12,18 +12,26 @@ import { Separator } from "./ui/separator";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 
 const ThemeToggle = () => {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="rounded-full">
+      <DropdownMenuTrigger
+        asChild
+        className="rounded-full hover:scale-[1.1] transition-transform"
+      >
         <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          {theme === "dark" ? (
+            <Moon size={20} />
+          ) : theme === "light" ? (
+            <Sun size={20} />
+          ) : (
+            <Laptop size={20} />
+          )}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="translate-y-3">
         <DropdownMenuLabel className="pl-2">Experimental</DropdownMenuLabel>
         <Separator />
         <DropdownMenuItem onClick={() => setTheme("light")}>

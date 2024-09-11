@@ -43,7 +43,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-200 px-5 py-8 md:px-12 lg:px-28">
+    <header className="bg-gray-200 dark:bg-transparent px-5 py-8 md:px-12 lg:px-28">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 text-base font-semibold sm:gap-3 sm:text-2xl">
           <Image
@@ -51,7 +51,7 @@ export default function Header() {
             width={30}
             height={30}
             alt="Logo"
-            className="w-[25px] sm:w-[40px]"
+            className="w-[25px] sm:w-[40px] dark:invert"
           />
           <Link href="/">Blogmos v2</Link>
         </div>
@@ -77,10 +77,10 @@ export default function Header() {
         </div>
       </div>
       <div className="my-10 text-center">
-        <h1 className="text-4xl font-bold text-gray-800 sm:text-6xl">
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-white sm:text-6xl">
           Latest Blogs
         </h1>
-        <p className="mx-auto mt-4 max-w-[740px] text-sm text-gray-600 sm:text-base">
+        <p className="mx-auto mt-4 max-w-[740px] text-sm text-gray-600 dark:text-gray-400 sm:text-base">
           Discover the latest insights and trends in our blog. Join our
           community and stay updated!
         </p>

@@ -21,6 +21,7 @@ export async function GET(request) {
     const page = parseInt(request.nextUrl.searchParams.get("page")) || 1;
     const limit = parseInt(request.nextUrl.searchParams.get("limit")) || 10;
     const query = request.nextUrl.searchParams.get("query");
+    const category = request.nextUrl.searchParams.get("category");
 
     const options = {
       page,
@@ -34,10 +35,22 @@ export async function GET(request) {
       },
     };
 
+    let filter = {};
+    /* 
+    {
+      title: Regex_expresion,
+      category: else_than _ALL,
+      
+    } 
+    */
+
     if (query) {
       const searchRegex = new RegExp(query, "i");
-      const result = await BlogModel.paginate({ title: searchRegex }, options);
-      return NextResponse.json(result);
+      filter.title = searchRegex;
+    }
+
+    if (category && category !== "All") {
+      filter.category = category;
     }
 
     if (blogId) {
@@ -48,7 +61,10 @@ export async function GET(request) {
         );
       }
 
-      const blog = await BlogModel.findById(blogId).populate("author", "name profileImg")
+      const blog = await BlogModel.findById(blogId).populate(
+        "author",
+        "name profileImg"
+      );
       if (!blog) {
         return NextResponse.json(
           { message: "Blog not found" },
@@ -58,7 +74,7 @@ export async function GET(request) {
       return NextResponse.json({ blog });
     }
 
-    const result = await BlogModel.paginate({}, options);
+    const result = await BlogModel.paginate(filter, options);
 
     return NextResponse.json(result);
   } catch (error) {
@@ -69,7 +85,6 @@ export async function GET(request) {
     );
   }
 }
-
 // API endpoint to upload blog posts
 export async function POST(request) {
   try {

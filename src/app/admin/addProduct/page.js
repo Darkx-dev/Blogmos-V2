@@ -8,9 +8,15 @@ import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const EditorComponent = dynamic(() => import("@/components/AdminComponents/EditorComponent"), { ssr: false });
+import EditorComponent from "@/components/AdminComponents/EditorComponent";
 
 const AddProduct = () => {
   const { data: session } = useSession();
@@ -41,6 +47,7 @@ const AddProduct = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    if (!content) return toast.error("Please write something in content")
     if (!image) {
       toast.error("Please upload an image");
       return;
@@ -85,7 +92,7 @@ const AddProduct = () => {
         <p className="text-xl font-semibold">Upload thumbnail</p>
         <label htmlFor="image" className="block mt-4 cursor-pointer">
           <Image
-            className="w-auto h-auto object-cover mb-4"
+            className="w-auto h-auto object-cover mb-4 dark:invert"
             src={image ? URL.createObjectURL(image) : assets.upload_area}
             alt="Upload Area"
             width={500}
@@ -93,7 +100,7 @@ const AddProduct = () => {
           />
         </label>
         <Input
-          type="file"
+          type="file/image"
           id="image"
           name="image"
           hidden
@@ -129,24 +136,32 @@ const AddProduct = () => {
       </div>
       <div className="mb-6">
         <p className="text-xl font-semibold">Blog Category</p>
-        <Select value={data.category} onValueChange={(value) => setData((prevData) => ({ ...prevData, category: value }))}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Startup">Startup</SelectItem>
-            <SelectItem value="Technology">Technology</SelectItem>
-            <SelectItem value="Lifestyle">Lifestyle</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center justify-start gap-4">
+          <Select
+            value={data.category}
+            required
+            onValueChange={(value) =>
+              setData((prevData) => ({ ...prevData, category: value }))
+            }
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Startup">Startup</SelectItem>
+              <SelectItem value="Technology">Technology</SelectItem>
+              <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            ref={submitButtonRef}
+            type="submit"
+            className="w-full py-2 bg-black dark:bg-transparent dark:border text-white"
+          >
+            Add
+          </Button>
+        </div>
       </div>
-      <Button
-        ref={submitButtonRef}
-        type="submit"
-        className="w-full h-12 bg-black text-white"
-      >
-        Add
-      </Button>
     </form>
   );
 };
