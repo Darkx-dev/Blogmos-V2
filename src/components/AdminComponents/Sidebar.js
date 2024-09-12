@@ -1,100 +1,57 @@
-"use client";
-import React, { useState } from "react";
-import {
-  SidebarProvider,
-  DesktopSidebar,
-  MobileSidebar,
-  SidebarLink,
-} from "@/components/ui/sidebar";
-import Image from "next/image";
-import { assets } from "@/assets"; 
-import { usePathname } from "next/navigation";
-import { IconList, IconMailHeart, IconPlus } from "@tabler/icons-react";
+"use client"
 
-const Sidebar = () => {
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+import React from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { PlusCircle, ListOrdered, Users, Home } from "lucide-react"
+import { assets } from "@/assets"
+import Image from "next/image"
 
-  // Define links
-  const links = [
-    {
-      label: "Add Blogs",
-      href: "/admin/addProduct",
-      icon: <IconPlus size={20} />,
-    },
-    {
-      label: "Blog List",
-      href: "/admin/blogList",
-      icon: <IconList size={20} />,
-    },
-    {
-      label: "Subscribers",
-      href: "/admin/subscribers",
-      icon: <IconMailHeart size={20} />,
-    },
-  ];
+const links = [
+  { label: "Dashboard", href: "/admin", icon: Home },
+  { label: "Add Blog", href: "/admin/addProduct", icon: PlusCircle },
+  { label: "Blog List", href: "/admin/blogList", icon: ListOrdered },
+  { label: "Subscribers", href: "/admin/subscribers", icon: Users },
+]
+
+const SidebarLink = ({ href, label, icon: Icon, isActive }) => (
+  <Link href={href} passHref>
+    <Button
+      variant={isActive ? "secondary" : "ghost"}
+      className={cn(
+        "w-full justify-start gap-2 px-2",
+        isActive && "bg-primary/10 text-primary hover:bg-primary/20"
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{label}</span>
+    </Button>
+  </Link>
+)
+
+export default function Sidebar({ className }) {
+  const pathname = usePathname()
 
   return (
-    <SidebarProvider open={open} setOpen={setOpen}>
-      <DesktopSidebar className="shadow-lg min-h-screen h-full">
-        <div className="flex items-center pl-2 h-[60px]">
-          <Image src={assets.logo} width={40} alt="Logo" className="dark:invert"/>
-          <SidebarLink
-            link={{
-              href: "/",
-              label: "Blogmos v2",
-            }}
-            className="*:text-xl pl-2 font-semibold"
-          />
-        </div>
-        <div
-          className={`flex-1 flex-grow flex flex-col py-10 *:px-4 `}
-        >
-          {links.map((link, index) => {
-            const isActive = pathname === link.href;
-            return (
-              <SidebarLink
-                key={index}
-                link={link}
-                className={`my-1 h-16 *:text-lg ${
-                  isActive? "invert bg-white dark:bg-black" : ""
-                }`}
-              />
-            );
-          })}
-        </div>
-      </DesktopSidebar>
-      <MobileSidebar className=" shadow-lg justify-start p-0">
-        <div className="flex items-center gap-3 text-2xl px-4 py-4 border-b border-gray-300">
-          <Image src={assets.logo} width={50} alt="Logo" />
-          <SidebarLink
-            link={{
-              href: "/",
-              label: "Blogmos v2",
-            }}
-            className="*:text-xl pl-2"
-          />
-        </div>
-        <div
-          className={`flex flex-col px-5 mt-10`}
-          onClick={() => setOpen(!open)}
-        >
-          {links.map((link, index) => {
-            const isActive = pathname === link.href;
-            return (
-              <SidebarLink
-                key={index}
-                link={link}
-                className={`my-1 h-16 *:text-lg px-5 ${
-                  isActive ? "invert bg-white" : ""
-                }`}
-              />
-            );
-          })}
-        </div>
-      </MobileSidebar>
-    </SidebarProvider>
-  );
-};
-
-export default Sidebar;
+    <aside className={cn("w-64 bg-background border-r", className)}>
+      <div className="flex h-16 items-center border-b px-6 gap-2">
+        <Image src={assets.logo} width={25} className="dark:invert"/>
+        <h2 className="text-lg font-semibold dark:text-white">Blogmos v2</h2>
+      </div>
+      <ScrollArea className="h-[calc(100vh-4rem)] pb-10">
+        <nav className="flex flex-col gap-2 p-4">
+          {links.map((link) => (
+            <SidebarLink
+              key={link.href}
+              {...link}
+              isActive={pathname === link.href}
+            />
+          ))}
+        </nav>
+      </ScrollArea>
+    </aside>
+  )
+}

@@ -87,7 +87,7 @@ const AddProduct = () => {
   };
 
   return (
-    <form className="p-5 sm:p-12" onSubmit={onSubmitHandler}>
+    <form className="" onSubmit={onSubmitHandler}>
       <div className="mb-6">
         <p className="text-xl font-semibold">Upload thumbnail</p>
         <label htmlFor="image" className="block mt-4 cursor-pointer">
@@ -100,9 +100,10 @@ const AddProduct = () => {
           />
         </label>
         <Input
-          type="file/image"
+          type="file"
           id="image"
           name="image"
+          accept="image/*"
           hidden
           required
           onChange={(e) => setImage(e.target.files[0])}

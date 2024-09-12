@@ -1,139 +1,136 @@
-"use client";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import BlogItem from "./BlogItem";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
-import { Input } from "./ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+"use client"
 
-const BlogList = () => {
-  const [menu, setMenu] = useState("All");
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
+import React, { useEffect, useState, useCallback } from "react"
+import BlogItem from "./BlogItem"
+import axios from "axios"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ChevronLeft, ChevronRight, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { motion, AnimatePresence } from "framer-motion"
 
-  const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 9
+const categories = ["All", "Technology", "Startup", "Lifestyle"]
 
-  // Fetch blogs with pagination and search query
+export default function BlogList() {
+  const [activeCategory, setActiveCategory] = useState("All")
+  const [blogs, setBlogs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isSearchVisible, setIsSearchVisible] = useState(false)
+
   const fetchBlogs = useCallback(async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const response = await axios.get("/api/blog", {
         params: {
           page: currentPage,
           limit: ITEMS_PER_PAGE,
           query: searchQuery,
-          category: menu !== "All" ? menu : undefined,
+          category: activeCategory !== "All" ? activeCategory : undefined,
         },
-      });
-      setBlogs(response.data.docs);
-      setTotalPages(response.data.totalPages);
+      })
+      setBlogs(response.data.docs)
+      setTotalPages(response.data.totalPages)
     } catch (error) {
-      console.error("Error fetching blogs:", error);
+      console.error("Error fetching blogs:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [currentPage, searchQuery, menu]);
+  }, [currentPage, searchQuery, activeCategory])
 
-  // Fetch blogs when dependencies change
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchBlogs();
-    }, 500); // 300ms debounce
+      fetchBlogs()
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [fetchBlogs])
 
-    return () => clearTimeout(timer);
-  }, [fetchBlogs]);
-
-  // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+      setCurrentPage(newPage)
     }
-  };
+  }
 
-  // Handle category change
   const handleCategoryChange = (category) => {
-    console.log("Handle category change : " + category);
-    setMenu(category);
-    setCurrentPage(1);
-  };
+    setActiveCategory(category)
+    setCurrentPage(1)
+  }
 
-  // Handle search query change
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
-  };
+    setSearchQuery(e.target.value)
+    setCurrentPage(1)
+  }
 
-  // Format date
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const categories = useMemo(
-    () => ["All", "Technology", "Startup", "Lifestyle"],
-    []
-  );
+    const options = { year: "numeric", month: "long", day: "numeric" }
+    return new Date(dateString).toLocaleDateString(undefined, options)
+  }
 
   return (
-    <div className="container mx-auto px-10 py-8">
-      {/* Menu Section */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="flex items-center w-full sm:w-auto"
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              {menu}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
-            {categories.map((category) => (
-              <DropdownMenuItem
-                key={category}
-                onClick={() => handleCategoryChange(category)}
+    <div className="container mx-auto px-4 sm:max-w-7xl py-12">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-4xl font-bold text-primary">Our Blogs</h1>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSearchVisible(!isSearchVisible)}
+            aria-label="Toggle search"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+          <AnimatePresence>
+            {isSearchVisible && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: "auto", opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                {category}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Input
-          placeholder="Search for blogs"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          type="text"
-          name="query"
-          className="sm:py-5 sm:max-w-[400px] w-full focus-visible:ring-0 focus-visible:ring-offset-0"
-          required
-        />
+                <Input
+                  placeholder="Search blogs..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full max-w-xs"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Blog Grid */}
-      <div className="mb-8 min-h-[50vh]">
+      <div className="mb-8 flex flex-wrap gap-2">
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={activeCategory === category ? "default" : "outline"}
+            onClick={() => handleCategoryChange(category)}
+            className="rounded-full"
+          >
+            {category}
+          </Button>
+        ))}
+      </div>
+
+      <div className="mb-12 min-h-[60vh]">
         {loading ? (
-          <div className="columns-sm space-y-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array(ITEMS_PER_PAGE)
               .fill(0)
               .map((_, index) => (
-                <Skeleton key={index} className="w-full h-[300px]" />
+                <Skeleton key={index} className="w-full h-[400px] rounded-lg" />
               ))}
           </div>
         ) : blogs.length > 0 ? (
-          <div className="columns-sm space-y-6 gap-6">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             {blogs.map((blog) => (
               <BlogItem
                 key={blog._id}
@@ -146,13 +143,12 @@ const BlogList = () => {
                 updatedAt={formatDate(blog.updatedAt)}
               />
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <p className="text-center text-lg">No blogs found.</p>
+          <p className="text-center text-lg text-muted-foreground">No blogs found.</p>
         )}
       </div>
 
-      {/* Pagination */}
       {!loading && blogs.length > 0 && (
         <div className="flex justify-center items-center space-x-2">
           <Button
@@ -179,7 +175,5 @@ const BlogList = () => {
         </div>
       )}
     </div>
-  );
-};
-
-export default BlogList;
+  )
+}

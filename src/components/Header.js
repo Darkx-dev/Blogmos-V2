@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import React, { useState } from "react";
 import { assets } from "@/assets";
@@ -17,7 +16,9 @@ import {
   AlertDialogDescription,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import ThemeToggle from "./ThemeToggle.js"
+
+import dynamic from "next/dynamic";
+const ThemeToggle = dynamic(() => import("./ThemeToggle"), { ssr: false });
 
 export default function Header() {
   const { data: session } = useSession();
@@ -56,24 +57,9 @@ export default function Header() {
           <Link href="/">Blogmos v2</Link>
         </div>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {session?.user?.isAdmin && <UserDropdown />}
-            <ThemeToggle/>
-          {/* {session?.user?.isAdmin ? (
-            <Button asChild variant="default" className="py-6">
-              <Link href="/admin">Welcome admin</Link>
-            </Button>
-          ) : (
-            <Button variant="default" className="py-6">
-              Get Started{" "}
-              <Image
-                src={assets.arrow}
-                alt="Arrow"
-                width={16}
-                height={16}
-                className="ml-2"
-              />
-            </Button>
-          )} */}
+          {/* { typeof window !== 'undefined'  && <ThemeToggle />} */}
         </div>
       </div>
       <div className="my-10 text-center">

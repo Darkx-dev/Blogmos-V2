@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
@@ -91,7 +92,7 @@ const BlogList = () => {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-xl font-bold dark:text-white">All Blogs</h2>
         <Input
@@ -135,7 +136,7 @@ const BlogList = () => {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>{blog.title}</TableCell>
+                  <TableCell><Link href={`/blogs/${blog._id}`} className="w-full h-full">{blog.title}</Link></TableCell>
                   <TableCell className="hidden sm:table-cell">
                     {blog.createdAt
                       ? format(new Date(blog.createdAt), "MMM dd, yyyy")

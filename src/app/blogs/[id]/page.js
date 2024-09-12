@@ -73,19 +73,19 @@ const Blog = ({ params }) => {
 const Header = ({ session }) => (
   <header className="bg-secondary dark:bg-transparent py-4 px-6 md:px-12">
     <div className="max-w-7xl mx-auto flex items-center justify-between">
-      <Link href="/" className="flex items-center space-x-2 text-xl font-bold">
+      <div className="flex items-center gap-1 text-base font-semibold sm:gap-3 sm:text-2xl">
         <Image
           src={assets.logo}
-          width={40}
-          height={40}
+          width={30}
+          height={30}
           alt="Logo"
-          className="dark:invert"
+          className="w-[25px] sm:w-[40px] dark:invert"
         />
-        <span>Blogmos v2</span>
-      </Link>
+        <Link href="/">Blogmos v2</Link>
+      </div>
       <div className="flex items-center gap-3">
-        {session?.user?.isAdmin && <UserDropdown />}
         <ThemeToggle />
+        {session?.user?.isAdmin && <UserDropdown />}
       </div>
     </div>
   </header>

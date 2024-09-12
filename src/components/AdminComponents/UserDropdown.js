@@ -13,23 +13,25 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { date } from "zod";
-import { AvatarFallback } from "@radix-ui/react-avatar";
 
 const UserDropdown = () => {
   const { data: session } = useSession();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center">
-        <p className="pr-2">{session?.user?.name}</p>
-        <Avatar className="size-[36px]">
-          <AvatarImage src={session?.user?.image} alt="Admin" />
+        <p className="pr-2 hidden sm:block">{session?.user?.name}</p>
+        <Avatar>
+          <AvatarImage src={session?.user?.image} />
           <AvatarFallback>{session?.user?.name.charAt(0)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent  align="end" className="translate-y-3">
-        <DropdownMenuLabel>{session?.user?.email}</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="translate-y-3">
+        <DropdownMenuLabel>
+          <p className="sm:hidden">{session?.user?.name}</p>
+          <p>{session?.user?.email}</p>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>

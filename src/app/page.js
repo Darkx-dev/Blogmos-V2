@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
   return (
-    <ScrollArea className="min-h-screen flex flex-col scrollbar-hide h-screen overflow-auto">
+    <ScrollArea className="min-h-screen flex flex-col scrollbar-hide h-screen overflow-auto" >
       <ToastContainer theme="dark" />
       <Header />
       <BlogList />
