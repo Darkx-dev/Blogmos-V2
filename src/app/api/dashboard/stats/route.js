@@ -12,10 +12,10 @@ async function connectDatabase() {
 export async function GET() {
   try {
     connectDatabase()
-    
-    const totalPosts = await BlogModel.countDocuments();
-    const subscribers = await EmailModel.countDocuments();
-    const totalUsers = await UserModel.countDocuments();
+
+    const totalPosts = await BlogModel.estimatedDocumentCount()
+    const subscribers = await EmailModel.estimatedDocumentCount();
+    const totalUsers = await UserModel.estimatedDocumentCount()
 
     // Calculate total views 
     const blogs = await BlogModel.find({}, "views");
