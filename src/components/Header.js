@@ -37,7 +37,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-200 dark:bg-transparent px-5 py-8 md:px-12 lg:px-28 relative h-[60px]">
+    <header className="bg-gray-200 dark:bg-transparent px-5 py-8 md:px-12 lg:px-28 relative h-[">
       <NavBar />
       <div className="my-10 text-center">
         <h1 className="text-4xl font-bold text-gray-800 dark:text-white sm:text-6xl">

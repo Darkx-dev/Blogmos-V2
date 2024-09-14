@@ -66,30 +66,29 @@ const BlogForm = ({ initialData, isEditMode }) => {
 
     try {
       if (isEditMode) {
-        await axios.put(`/api/blog`, formData, {
-          params: { id: initialData._id },
-        });
+        try {
+          await axios.put(`/api/blog`, formData, {
+            params: { id: initialData._id },
+          });
+          setTimeout(() => {
+            window.location.href = `/blogs/${initialData._id}`;
+          }, 500);
+        } catch (err) {
+          toast.error("Failed to update blog post");
+          return;
+        }
       } else {
-        await axios.post("/api/blog", formData);
+        try {
+          const response = await axios.post("/api/blog", formData);
+          console.log(response.data)
+          setTimeout(() => {
+            window.location.href = `/blogs/${response.data.blog._id}`;
+          }, 500);
+        } catch (err) {
+          toast.error("Failed to add blog post");
+          return;
+        }
       }
-      toast.success(
-        isEditMode
-          ? "Blog post updated successfully"
-          : "Blog post added successfully"
-      );
-      setContent("");
-      setImage(null);
-      setData({
-        title: "",
-        description: "",
-        category: "Startup",
-        authorImg: session?.user?.image || "/author_img.png",
-        author: session?.user?.name || "",
-      });
-      fileInputRef.current.value = null;
-      setTimeout(() => {
-        window.location.href = `/blogs/${initialData._id}`;
-      }, 500);
     } catch (error) {
       toast.error("Failed, try again");
     } finally {
