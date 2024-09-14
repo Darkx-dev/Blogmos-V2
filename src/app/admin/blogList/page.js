@@ -76,7 +76,7 @@ const BlogList = () => {
   const handleDelete = async (blogId) => {
     try {
       await axios.delete(`/api/blog?id=${blogId}`);
-      fetchBlogs();
+      setBlogs(blogs.filter((blog) => blog._id!== blogId));
     } catch (error) {
       console.error("Error deleting blog:", error);
       setError("Failed to delete blog. Please try again.");

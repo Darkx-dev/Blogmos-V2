@@ -71,7 +71,7 @@ const Subscribers = () => {
   const handleDelete = async (emailId) => {
     try {
       await axios.delete(`/api/email?id=${emailId}`);
-      fetchSubscribers();
+      subscribers.filter((subscriber) => subscriber._id!== emailId);
     } catch (error) {
       console.error("Error deleting subscriber:", error);
       setError("Failed to delete subscriber, try again");
