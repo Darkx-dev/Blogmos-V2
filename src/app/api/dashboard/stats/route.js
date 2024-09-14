@@ -15,7 +15,6 @@ export async function GET() {
     connectDatabase()
 
     const blogs = await BlogModel.find({}, "views");
-    console.log(blogs)
     const totalPosts = blogs.length
     const subscribers = await EmailModel.estimatedDocumentCount();
     const totalUsers = await UserModel.estimatedDocumentCount()

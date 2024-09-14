@@ -67,15 +67,19 @@ export default function EditorComponent({ markdown, setContent }) {
             markdownShortcutPlugin(),
             imagePlugin(),
             diffSourcePlugin(),
-            codeBlockPlugin({ defaultCodeBlockLanguage: "js" }),
+            codeBlockPlugin({ defaultCodeBlockLanguage: "javascript" }),
             codeMirrorPlugin({
               codeBlockLanguages: {
-                js: "JavaScript",
+                javascript: "JavaScript",
                 css: "CSS",
                 html: "HTML",
                 python: "Python",
+                c: "C",
+                cpp: "C++",
                 rust: "Rust",
                 go: "Go",
+                php: "PHP",
+                ruby: "Ruby",
               },
             }),
             toolbarPlugin({
