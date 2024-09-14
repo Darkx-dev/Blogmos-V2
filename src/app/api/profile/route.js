@@ -5,6 +5,10 @@ import UserModel from "@/lib/models/UserModel";
 import { auth } from "@/auth";
 
 const PATCH = auth(async (request) => {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
   try {
     if (request.auth.user?.isAdmin) {
       // Extract data from the request body

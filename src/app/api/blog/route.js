@@ -4,26 +4,25 @@ import BlogModel from "@/lib/models/BlogModel";
 import UserModel from "@/lib/models/UserModel";
 import mongoose from "mongoose";
 import sharp from "sharp";
-import path from "path";
 import { headers } from "next/headers";
 import { differenceInHours } from "date-fns";
+import { auth } from "@/auth";
 
 async function connectDatabase() {
   if (mongoose.connection.readyState === 0) {
     await ConnectDB();
   }
 }
-
 // API endpoint to get all blog posts with pagination
-export async function GET(request) {
+export async function GET(req) {
   try {
     await connectDatabase(); // Ensure DB connection
 
-    const blogId = request.nextUrl.searchParams.get("id");
-    const page = parseInt(request.nextUrl.searchParams.get("page")) || 1;
-    const limit = parseInt(request.nextUrl.searchParams.get("limit")) || 10;
-    const query = request.nextUrl.searchParams.get("query");
-    const category = request.nextUrl.searchParams.get("category");
+    const blogId = req.nextUrl.searchParams.get("id");
+    const page = parseInt(req.nextUrl.searchParams.get("page")) || 1;
+    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
+    const query = req.nextUrl.searchParams.get("query");
+    const category = req.nextUrl.searchParams.get("category");
 
     const options = {
       page,
@@ -71,10 +70,10 @@ export async function GET(request) {
 
       const existingView = blog.viewedBy.find(
         (view) => view?.ipAddress === clientIp
-      )
+      );
       const hoursSinceLastView = existingView
-      ? differenceInHours(new Date(), new Date(existingView.lastViewed))
-      : 25; // Default to 25 hours if not found to ensure a new view is counted
+        ? differenceInHours(new Date(), new Date(existingView.lastViewed))
+        : 25; // Default to 25 hours if not found to ensure a new view is counted
 
       if (!existingView && hoursSinceLastView > 24) {
         await BlogModel.findByIdAndUpdate(
@@ -104,7 +103,7 @@ export async function GET(request) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error in GET request:", error);
+    console.error("Error in GET req:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
@@ -112,11 +111,16 @@ export async function GET(request) {
   }
 }
 // API endpoint to upload blog posts
-export async function POST(request) {
+export async function POST(req) {
+  // Check authentication
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
   try {
     await connectDatabase(); // Ensure DB connection
 
-    const formData = await request.formData();
+    const formData = await req.formData();
 
     const image = formData.get("image");
     if (!image) {
@@ -126,22 +130,27 @@ export async function POST(request) {
       );
     }
 
+    let imageUri = "";
     // Read the image file
-    const imageBuffer = await image.arrayBuffer();
+    if (!image instanceof File) {
+      // Read and process the new image if it's not base64
+      const imageBuffer = await image.arrayBuffer();
+      const compressedImageBuffer = await sharp(Buffer.from(imageBuffer))
+        .resize(800)
+        .webp({ quality: 80 })
+        .toBuffer();
 
-    // Compress and resize the image
-    const compressedImageBuffer = await sharp(Buffer.from(imageBuffer))
-      .resize(800)
-      .webp({ quality: 80 })
-      .toBuffer();
-
-    const base64Image = compressedImageBuffer.toString("base64");
-    const base64ImageUri = `data:image/webp;base64,${base64Image}`;
+      const base64Image = compressedImageBuffer.toString("base64");
+      imageUri = `data:image/webp;base64,${base64Image}`; // Update image URI
+    } else {
+      // If the image is already base64, use it directly
+      imageUri = image;
+    }
 
     const blogData = {
       title: formData.get("title"),
       description: formData.get("description"),
-      image: base64ImageUri,
+      image: imageUri,
       category: formData.get("category"),
       author: formData.get("author"),
       authorImg: formData.get("authorImg"),
@@ -180,20 +189,25 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error in POST request:", error);
+    console.error("Error in POST req:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
     );
   }
 }
-
 // API endpoint to update a blog post
-export async function PUT(request) {
+export async function PUT(req) {
+  // Check authentication
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await connectDatabase(); // Ensure DB connection
 
-    const blogId = request.nextUrl.searchParams.get("id");
+    const blogId = req.nextUrl.searchParams.get("id");
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json(
         { message: "Invalid blog ID format" },
@@ -201,21 +215,20 @@ export async function PUT(request) {
       );
     }
 
-    const formData = await request.formData();
-    const timestamp = Date.now();
+    const formData = await req.formData();
 
     const blog = await BlogModel.findById(blogId);
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
 
-    const image = formData.get("image");
     let imageUri = blog.image; // Use the existing image if no new one is uploaded
 
+    const image = formData.get("image");
+
     if (image) {
-      // Check if the image is already in base64 format
-      if (!image.startsWith("data:image")) {
-        // Read and process the new image if it's not base64
+      if (image instanceof File) {
+        // Read and process the new image if it's a File
         const imageBuffer = await image.arrayBuffer();
         const compressedImageBuffer = await sharp(Buffer.from(imageBuffer))
           .resize(800)
@@ -224,9 +237,14 @@ export async function PUT(request) {
 
         const base64Image = compressedImageBuffer.toString("base64");
         imageUri = `data:image/webp;base64,${base64Image}`; // Update image URI
-      } else {
-        // If the image is already base64, use it directly
+      } else if (typeof image === "string" && image.startsWith("data:")) {
+        // If the image is a base64 string, use it directly
         imageUri = image;
+      } else {
+        return NextResponse.json(
+          { message: "Invalid image format" },
+          { status: 400 }
+        );
       }
     }
 
@@ -240,27 +258,40 @@ export async function PUT(request) {
     };
 
     // Update the blog post
-    const updatedBlog = await BlogModel.findByIdAndUpdate(blogId, updatedBlogData, { new: true });
+    const updatedBlog = await BlogModel.findByIdAndUpdate(
+      blogId,
+      updatedBlogData,
+      { new: true }
+    );
 
     return NextResponse.json(
-      { success: true, message: "Blog updated successfully", blog: updatedBlog },
+      {
+        success: true,
+        message: "Blog updated successfully",
+        blog: updatedBlog,
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in PUT request:", error);
+    console.error("Error in PUT req:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
     );
   }
 }
-
 // API endpoint to delete a blog post
-export async function DELETE(request) {
+export async function DELETE(req) {
+  // Check authentication
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await connectDatabase(); // Ensure DB connection
 
-    const blogId = request.nextUrl.searchParams.get("id");
+    const blogId = req.nextUrl.searchParams.get("id");
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json(
         { message: "Invalid blog ID format" },
@@ -283,7 +314,7 @@ export async function DELETE(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in DELETE request:", error);
+    console.error("Error in DELETE req:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

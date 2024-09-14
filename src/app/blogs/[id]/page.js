@@ -60,7 +60,7 @@ const Blog = ({ params }) => {
       <main className="flex-1">
         <HeroSection data={data} />
         <ArticleContent data={data} />
-        <Separator/>
+        <Separator />
         <ShareSection title={data?.title} />
       </main>
       <Footer />
@@ -112,18 +112,20 @@ const ArticleContent = ({ data }) => (
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}
         components={{
-          img: ({ node, ...props }) => (
+          img: ({ node,width, height, ...props }) => (
             <Image
-              {...props}
+              src={props.src}
               alt={props.alt || ""}
-              className="my-4 rounded-md max-w-full h-auto mx-auto"
+              width={width || 400}
+              height={height ||300}
+              className="my-4 rounded-md max-w-full size-full mx-auto"
             />
           ),
-          code: ({ node, className,...props}) => (
+          code: ({ node, className, ...props }) => (
             <pre className={`${className} p-3 rounded-md my-2`} {...props}>
               <code {...props}>{props.children}</code>
             </pre>
-          )
+          ),
         }}
       >
         {purify(data.content)}

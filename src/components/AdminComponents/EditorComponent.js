@@ -22,9 +22,7 @@ import {
   thematicBreakPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { Button } from "@/components/ui/button";
 import { Maximize2, Minimize2 } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import "highlight.js/styles/github-dark.css";
 
 export default function EditorComponent({ markdown, setContent }) {

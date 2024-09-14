@@ -17,7 +17,6 @@ import EditorComponent from "@/components/AdminComponents/EditorComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
-import { ScrollArea } from "../ui/scroll-area";
 
 const BlogForm = ({ initialData, isEditMode }) => {
   const { data: session } = useSession();
@@ -45,8 +44,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
   const handleImageChange = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
+      setImage(file); // Store the File object in state
     }
   }, []);
 
@@ -69,28 +67,18 @@ const BlogForm = ({ initialData, isEditMode }) => {
 
     try {
       if (isEditMode) {
-        try {
-          await axios.put(`/api/blog`, formData, {
-            params: { id: initialData._id },
-          });
-          setTimeout(() => {
-            window.location.href = `/blogs/${initialData._id}`;
-          }, 500);
-        } catch (err) {
-          toast.error("Failed to update blog post");
-          return;
-        }
+        await axios.put(`/api/blog`, formData, {
+          params: { id: initialData._id },
+        });
+        setTimeout(() => {
+          window.location.href = `/blogs/${initialData._id}`;
+        }, 500);
       } else {
-        try {
-          const response = await axios.post("/api/blog", formData);
-          console.log(response.data);
-          setTimeout(() => {
-            window.location.href = `/blogs/${response.data.blog._id}`;
-          }, 500);
-        } catch (err) {
-          toast.error("Failed to add blog post");
-          return;
-        }
+        const response = await axios.post("/api/blog", formData);
+        console.log(response.data);
+        setTimeout(() => {
+          window.location.href = `/blogs/${response.data.blog._id}`;
+        }, 500);
       }
     } catch (error) {
       toast.error("Failed, try again");
@@ -103,7 +91,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
     <div className="container mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className=" font-bold">
+          <CardTitle className="font-bold">
             {isEditMode ? "Edit Blog Post" : "Add New Blog Post"}
           </CardTitle>
         </CardHeader>
@@ -118,11 +106,11 @@ const BlogForm = ({ initialData, isEditMode }) => {
                   >
                     <p className="mb-4">Upload Thumbnail</p>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer">
-                      {image && (
+                      {image && image instanceof File && (
                         <Image
                           priority
                           className="w-full h-48 object-cover mb-2"
-                          src={image}
+                          src={URL.createObjectURL(image)}
                           alt="Upload Area"
                           width={500}
                           height={250}
@@ -217,7 +205,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
                   htmlFor="content"
                   className="text-lg font-semibold mb-4 block"
                 >
-                  Blog Category
+                  Blog Content
                 </Label>
                 <EditorComponent markdown={content} setContent={setContent} />
               </div>

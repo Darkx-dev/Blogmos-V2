@@ -3,6 +3,7 @@ import BlogModel from "@/lib/models/BlogModel";
 import EmailModel from "@/lib/models/EmailModel";
 import UserModel from "@/lib/models/UserModel";
 import mongoose from "mongoose";
+import { auth } from "@/auth";
 
 async function connectDatabase() {
   if (mongoose.connection.readyState === 0) {
@@ -11,6 +12,10 @@ async function connectDatabase() {
 }
 
 export async function GET() {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
   try {
     connectDatabase()
 
