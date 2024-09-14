@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import BlogModel from "@/lib/models/BlogModel";
 import EmailModel from "@/lib/models/EmailModel";
 import UserModel from "@/lib/models/UserModel";
+import mongoose from "mongoose";
 
 async function connectDatabase() {
   if (mongoose.connection.readyState === 0) {
