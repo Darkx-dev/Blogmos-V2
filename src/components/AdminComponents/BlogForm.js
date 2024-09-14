@@ -44,7 +44,10 @@ const BlogForm = ({ initialData, isEditMode }) => {
 
   const handleImageChange = useCallback((e) => {
     const file = e.target.files[0];
-    if (file) setImage(file);
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+    }
   }, []);
 
   const onSubmitHandler = async (e) => {
@@ -80,7 +83,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
       } else {
         try {
           const response = await axios.post("/api/blog", formData);
-          console.log(response.data)
+          console.log(response.data);
           setTimeout(() => {
             window.location.href = `/blogs/${response.data.blog._id}`;
           }, 500);
@@ -116,7 +119,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
                     <p className="mb-4">Upload Thumbnail</p>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer">
                       {image && (
-                        <Image
+                        <img
                           className="w-full h-48 object-cover mb-2"
                           src={image}
                           alt="Upload Area"
