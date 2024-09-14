@@ -12,11 +12,12 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import NotFound from "../not-found"
 
 export default function Layout({ children }) {
   const { data: session } = useSession()
 
-  if (!session) return null
+  if (!session) return <NotFound/>
   if (session && !session?.user?.isAdmin) notFound()
 
   return (

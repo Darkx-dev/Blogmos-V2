@@ -1,18 +1,23 @@
 import { NextResponse } from "next/server";
-import ConnectDB from "@/lib/config/db";
 import BlogModel from "@/lib/models/BlogModel";
 import EmailModel from "@/lib/models/EmailModel";
 import UserModel from "@/lib/models/UserModel";
 
+async function connectDatabase() {
+  if (mongoose.connection.readyState === 0) {
+    await ConnectDB();
+  }
+}
+
 export async function GET() {
   try {
-    await ConnectDB();
-
+    connectDatabase()
+    
     const totalPosts = await BlogModel.countDocuments();
     const subscribers = await EmailModel.countDocuments();
     const totalUsers = await UserModel.countDocuments();
 
-    // Calculate total views (assuming you have a 'views' field in your BlogModel)
+    // Calculate total views 
     const blogs = await BlogModel.find({}, "views");
     const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
 
