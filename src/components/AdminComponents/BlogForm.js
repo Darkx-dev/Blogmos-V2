@@ -119,7 +119,8 @@ const BlogForm = ({ initialData, isEditMode }) => {
                     <p className="mb-4">Upload Thumbnail</p>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer">
                       {image && (
-                        <img
+                        <Image
+                          priority
                           className="w-full h-48 object-cover mb-2"
                           src={image}
                           alt="Upload Area"

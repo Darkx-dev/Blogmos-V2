@@ -18,6 +18,8 @@ import {
   markdownShortcutPlugin,
   DiffSourceToggleWrapper,
   diffSourcePlugin,
+  InsertThematicBreak,
+  thematicBreakPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { Button } from "@/components/ui/button";
@@ -67,6 +69,7 @@ export default function EditorComponent({ markdown, setContent }) {
             markdownShortcutPlugin(),
             imagePlugin(),
             diffSourcePlugin(),
+            thematicBreakPlugin(),
             codeBlockPlugin({ defaultCodeBlockLanguage: "javascript" }),
             codeMirrorPlugin({
               codeBlockLanguages: {
@@ -92,10 +95,8 @@ export default function EditorComponent({ markdown, setContent }) {
                   <InsertCodeBlock />
                   <InsertImage />
                   <DiffSourceToggleWrapper />
-                  <button
-                  className="pr-2"
-                    onClick={toggleFullScreen}
-                  >
+                  <InsertThematicBreak />
+                  <button className="pr-2" onClick={toggleFullScreen}>
                     {isFullScreen ? (
                       <Minimize2 className="h-4 w-4" />
                     ) : (
