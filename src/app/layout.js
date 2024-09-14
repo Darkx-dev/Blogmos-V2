@@ -15,8 +15,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
-      <body className={`${outfit.className} antialiased`}>
+    <html lang="en" suppressHydrationWarning={true} className="scrollbar-hide">
+      <body className={`${outfit.className} antialiased scrollbar-hide`}>
         <SessionProvider>
           {" "}
           <ThemeProviderSystem

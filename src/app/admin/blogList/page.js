@@ -22,6 +22,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
@@ -136,7 +137,11 @@ const BlogList = () => {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell><Link href={`/blogs/${blog._id}`} className="w-full h-full">{blog.title}</Link></TableCell>
+                  <TableCell>
+                    <Link href={`/blogs/${blog._id}`} className="w-full h-full">
+                      {blog.title}
+                    </Link>
+                  </TableCell>
                   <TableCell className="hidden sm:table-cell">
                     {blog.createdAt
                       ? format(new Date(blog.createdAt), "MMM dd, yyyy")
@@ -152,10 +157,19 @@ const BlogList = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <Separator/>
+                        <DropdownMenuItem>
+                          <Link
+                            href={`/admin/blog/edit/${blog._id}`}
+                            className=" w-full h-full"
+                          >
+                            Edit
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDelete(blog._id)}
                         >
-                          <p className="hover:text-red-500 w-full h-full">
+                          <p className="hover:text-red-500 w-full h-full cursor-pointer">
                             Delete
                           </p>
                         </DropdownMenuItem>

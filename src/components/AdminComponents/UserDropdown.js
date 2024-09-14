@@ -22,8 +22,8 @@ const UserDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center">
         <p className="pr-2 hidden sm:block">{session?.user?.name}</p>
-        <Avatar>
-          <AvatarImage src={session?.user?.image} />
+        <Avatar className="size-[35px]">
+          <AvatarImage src={session?.user?.image}/>
           <AvatarFallback>{session?.user?.name.charAt(0)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -35,7 +35,7 @@ const UserDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link href="/admin/blogList">Admin Panel</Link>
+            <Link href="/admin">Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <a

@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import DOMPurify from "dompurify";
 import { twMerge } from "tailwind-merge";
 
 export const cn = (...inputs) => {
@@ -29,3 +30,8 @@ export const handleShare = async (data, url) => {
     }
   }
 };
+
+export const purify = (content) => {
+  return DOMPurify.sanitize(content);
+};
+

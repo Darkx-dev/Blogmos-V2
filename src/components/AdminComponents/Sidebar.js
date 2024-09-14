@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { PlusCircle, ListOrdered, Users, Home } from "lucide-react"
-import { assets } from "@/assets"
 import Image from "next/image"
 
 const links = [
@@ -38,8 +37,10 @@ export default function Sidebar({ className }) {
   return (
     <aside className={cn("w-64 bg-background border-r", className)}>
       <div className="flex h-16 items-center border-b px-6 gap-2">
-        <Image src={assets.logo} width={25} className="dark:invert"/>
-        <h2 className="text-lg font-semibold dark:text-white">Blogmos v2</h2>
+        <Image src="/images/logo.png" width={25} height={25} alt="logo" className="dark:invert"/>
+        <Link href="/">
+        <p className="text-lg font-semibold dark:text-white">Blogmos v2</p>
+        </Link>
       </div>
       <ScrollArea className="h-[calc(100vh-4rem)] pb-10">
         <nav className="flex flex-col gap-2 p-4">

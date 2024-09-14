@@ -1,65 +1,109 @@
 "use client";
-import React from "react";
+
+import React, { useState, useCallback, useRef } from "react";
 import {
   BoldItalicUnderlineToggles,
-  InsertTable,
   MDXEditor,
   UndoRedo,
   headingsPlugin,
   imagePlugin,
-  tablePlugin,
   toolbarPlugin,
   InsertImage,
   BlockTypeSelect,
-  CodeToggle,
   codeBlockPlugin,
   InsertCodeBlock,
   codeMirrorPlugin,
   ListsToggle,
   listsPlugin,
+  markdownShortcutPlugin,
+  DiffSourceToggleWrapper,
+  diffSourcePlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+import { Button } from "@/components/ui/button";
+import { Maximize2, Minimize2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import "highlight.js/styles/github-dark.css";
 
-const EditorComponent = ({ markdown, editorRef, setContent }) => {
+export default function EditorComponent({ markdown, setContent }) {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const editorRef = useRef(null);
+
+  const toggleFullScreen = useCallback((e) => {
+    e.preventDefault(); // Prevent the default button behavior
+    setIsFullScreen((prev) => !prev);
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }, []);
+
   return (
-    <div className="w-full overflow-x-auto">
-      <MDXEditor
-        onChange={setContent}
-        ref={editorRef}
-        markdown={markdown}
-        contentEditableClassName="prose dark:prose-invert max-w-none bg-[#00000006] dark:bg-[#ffffff06] rounded-lg dark:text-white p-4 min-h-[200px]"
-        placeholder="Write something"
-        plugins={[
-          toolbarPlugin({
-            toolbarContents: () => (
-              <div className="flex flex-wrap gap-2">
-                <BlockTypeSelect />
-                <UndoRedo />
-                <BoldItalicUnderlineToggles />
-                <InsertTable />
-                <InsertImage />
-                <InsertCodeBlock />
-                <CodeToggle />
-                <ListsToggle />
-              </div>
-            ),
-          }),
-          tablePlugin(),
-          imagePlugin(),
-          headingsPlugin(),
-          listsPlugin(),
-          codeBlockPlugin({ defaultCodeBlockLanguage: "js" }),
-          codeMirrorPlugin({
-            codeBlockLanguages: {
-              js: "JavaScript",
-              css: "CSS",
-              python: "Python",
-            },
-          }),
-        ]}
-      />
+    <div
+      className={`w-full overflow-auto max-h-screen scrollbar-hide ${
+        isFullScreen ? "fixed inset-0 z-[30] bg-background" : ""
+      }`}
+    >
+      <div
+        className={`relative flex flex-col ${isFullScreen ? "h-screen" : ""}`}
+      >
+        <MDXEditor
+          onChange={setContent}
+          ref={editorRef}
+          markdown={markdown}
+          className={`${
+            isFullScreen
+              ? "fixed border-none h-full overflow-auto scrollbar-hide w-full top-0 left-0 backdrop-blur-md bg-gray-500/5"
+              : ""
+          }`}
+          contentEditableClassName={`mb-2 dark:shadow-white dark:text-white border rounded-lg p-4 ${
+            isFullScreen && "min-h-screen"
+          }`}
+          placeholder="Write your blog post here..."
+          plugins={[
+            headingsPlugin(),
+            listsPlugin(),
+            markdownShortcutPlugin(),
+            imagePlugin(),
+            diffSourcePlugin(),
+            codeBlockPlugin({ defaultCodeBlockLanguage: "js" }),
+            codeMirrorPlugin({
+              codeBlockLanguages: {
+                js: "JavaScript",
+                css: "CSS",
+                html: "HTML",
+                python: "Python",
+                rust: "Rust",
+                go: "Go",
+              },
+            }),
+            toolbarPlugin({
+              toolbarContents: () => (
+                <div className="flex flex-wrap justify-between gap-2 w-full dark:gray-600 border-t h-full p-2">
+                  <BlockTypeSelect />
+                  <UndoRedo />
+                  <BoldItalicUnderlineToggles />
+                  <ListsToggle />
+                  <InsertCodeBlock />
+                  <InsertImage />
+                  <DiffSourceToggleWrapper />
+                  <button
+                  className="pr-2"
+                    onClick={toggleFullScreen}
+                  >
+                    {isFullScreen ? (
+                      <Minimize2 className="h-4 w-4" />
+                    ) : (
+                      <Maximize2 className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              ),
+            }),
+          ]}
+        />
+      </div>
     </div>
   );
-};
-
-export default EditorComponent;
+}

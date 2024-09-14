@@ -1,13 +1,8 @@
 "use client";
-import Image from "next/image";
 import React, { useState } from "react";
-import { assets } from "@/assets";
 import axios from "axios";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import UserDropdown from "./AdminComponents/UserDropdown";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -16,12 +11,10 @@ import {
   AlertDialogDescription,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import NavBar from "./NavBar";
 
-import dynamic from "next/dynamic";
-const ThemeToggle = dynamic(() => import("./ThemeToggle"), { ssr: false });
 
 export default function Header() {
-  const { data: session } = useSession();
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
@@ -44,24 +37,8 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-200 dark:bg-transparent px-5 py-8 md:px-12 lg:px-28">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1 text-base font-semibold sm:gap-3 sm:text-2xl">
-          <Image
-            src={assets.logo}
-            width={30}
-            height={30}
-            alt="Logo"
-            className="w-[25px] sm:w-[40px] dark:invert"
-          />
-          <Link href="/">Blogmos v2</Link>
-        </div>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          {session?.user?.isAdmin && <UserDropdown />}
-          {/* { typeof window !== 'undefined'  && <ThemeToggle />} */}
-        </div>
-      </div>
+    <header className="bg-gray-200 dark:bg-transparent px-5 py-8 md:px-12 lg:px-28 relative h-[60px]">
+      <NavBar />
       <div className="my-10 text-center">
         <h1 className="text-4xl font-bold text-gray-800 dark:text-white sm:text-6xl">
           Latest Blogs

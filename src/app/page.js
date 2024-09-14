@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import BlogList from "@/components/BlogList";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -8,12 +8,12 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
   return (
-    <ScrollArea className="min-h-screen flex flex-col scrollbar-hide h-screen overflow-auto" >
+    <main className="min-h-screen flex flex-col">
       <ToastContainer theme="dark" />
       <Header />
       <BlogList />
       <Footer />
-    </ScrollArea>
+    </main>
   );
 };
 
