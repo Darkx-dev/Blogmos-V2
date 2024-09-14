@@ -14,14 +14,15 @@ export async function GET() {
   try {
     connectDatabase()
 
-    const totalPosts = await BlogModel.estimatedDocumentCount()
+    const blogs = await BlogModel.find({}, "views");
+    console.log(blogs)
+    const totalPosts = blogs.length
     const subscribers = await EmailModel.estimatedDocumentCount();
     const totalUsers = await UserModel.estimatedDocumentCount()
-
+    
+    
     // Calculate total views 
-    const blogs = await BlogModel.find({}, "views");
     const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
-
     // Calculate new posts in the last 30 days
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const newPosts = await BlogModel.countDocuments({
