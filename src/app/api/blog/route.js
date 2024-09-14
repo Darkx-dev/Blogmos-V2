@@ -132,7 +132,7 @@ export async function POST(req) {
 
     let imageUri = "";
     // Read the image file
-    if (!image instanceof File) {
+    if (image instanceof File) {
       // Read and process the new image if it's not base64
       const imageBuffer = await image.arrayBuffer();
       const compressedImageBuffer = await sharp(Buffer.from(imageBuffer))
