@@ -139,7 +139,7 @@ export async function POST(req) {
       const imageBuffer = await image.arrayBuffer();
       const compressedImageBuffer = await sharp(Buffer.from(imageBuffer))
         .resize(800)
-        .webp({ quality: 80 })
+        .webp({ quality: 60 })
         .toBuffer();
 
       const base64Image = compressedImageBuffer.toString("base64");
@@ -234,7 +234,7 @@ export async function PUT(req) {
         const imageBuffer = await image.arrayBuffer();
         const compressedImageBuffer = await sharp(Buffer.from(imageBuffer))
           .resize(800)
-          .webp({ quality: 80 })
+          .webp({ quality: 60 })
           .toBuffer();
 
         const base64Image = compressedImageBuffer.toString("base64");

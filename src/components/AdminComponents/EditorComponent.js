@@ -22,7 +22,7 @@ import {
   thematicBreakPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { Maximize2, Minimize2, AlertTriangle } from "lucide-react";
+import { Maximize2, Minimize2, AlertTriangle, Terminal } from "lucide-react";
 import "highlight.js/styles/github-dark.css";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -43,39 +43,50 @@ export default function EditorComponent({ markdown, setContent }) {
     }
   }, []);
 
-  const handleContentChange = useCallback((newContent) => {
-    if (newContent.length > MAX_CONTENT_LENGTH) {
-      setError(`Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters`);
-    } else {
-      setError(null);
-      setContent(newContent);
-    }
-  }, [setContent]);
+  const handleContentChange = useCallback(
+    (newContent) => {
+      if (newContent.length > MAX_CONTENT_LENGTH) {
+        setError(
+          `Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters`
+        );
+      } else {
+        setError(null);
+        setContent(newContent);
+      }
+    },
+    [setContent]
+  );
 
   useEffect(() => {
     const handleEscKey = (event) => {
-      if (event.key === 'Escape' && isFullScreen) {
+      if (event.key === "Escape" && isFullScreen) {
         toggleFullScreen(event);
       }
     };
 
-    document.addEventListener('keydown', handleEscKey);
+    document.addEventListener("keydown", handleEscKey);
 
     return () => {
-      document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener("keydown", handleEscKey);
     };
   }, [isFullScreen, toggleFullScreen]);
 
   return (
-    <div className={`w-full overflow-auto max-h-screen scrollbar-hide ${
-      isFullScreen ? "fixed inset-0 z-[30] bg-background" : ""
-    }`}>
-      <div className={`relative flex flex-col ${isFullScreen ? "h-screen" : ""}`}>
+    <div
+      className={`w-full overflow-auto max-h-screen scrollbar-hide ${
+        isFullScreen ? "fixed inset-0 z-[30]" : ""
+      }`}
+    >
+      <div
+        className={`relative flex flex-col ${isFullScreen ? "h-screen" : ""}`}
+      >
         {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+          <Alert>
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+              You can add components to your app using the cli.
+            </AlertDescription>
           </Alert>
         )}
         <MDXEditor
@@ -84,7 +95,7 @@ export default function EditorComponent({ markdown, setContent }) {
           markdown={markdown}
           className={`${
             isFullScreen
-              ? "fixed border-none h-full overflow-auto scrollbar-hide w-full top-0 left-0 backdrop-blur-md bg-gray-500/5"
+              ? "fixed border-none h-full overflow-auto scrollbar-hide w-full top-0 left-0 backdrop-blur-md"
               : ""
           }`}
           contentEditableClassName={`mb-2 dark:shadow-white dark:text-white border rounded-lg p-4 ${
@@ -133,9 +144,11 @@ export default function EditorComponent({ markdown, setContent }) {
                   <div className="flex items-center gap-2">
                     <DiffSourceToggleWrapper />
                     <button
-                      className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                      className="p-2 rounded transition-colors"
                       onClick={toggleFullScreen}
-                      aria-label={isFullScreen ? "Exit full screen" : "Enter full screen"}
+                      aria-label={
+                        isFullScreen ? "Exit full screen" : "Enter full screen"
+                      }
                     >
                       {isFullScreen ? (
                         <Minimize2 className="h-4 w-4" />

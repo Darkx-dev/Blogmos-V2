@@ -35,7 +35,7 @@ const UserDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link href="/admin">Dashboard</Link>
+            <Link href="/admin" className="w-full h-full">Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <a

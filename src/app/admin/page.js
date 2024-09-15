@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
+import { Separator } from "@/components/ui/separator";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -47,120 +48,128 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
+    <Card className="min-h-[calc(100vh-80px)]">
+      <CardContent>
+        <CardTitle className=" font-bold">Dashboard</CardTitle>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <StatsCard
+            title="Total Posts"
+            value={stats?.totalPosts}
+            icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+            isLoading={isLoading}
+          />
+          <StatsCard
+            title="Total Views"
+            value={stats?.totalViews}
+            icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+            isLoading={isLoading}
+          />
+          <StatsCard
+            title="Subscribers"
+            value={stats?.subscribers}
+            icon={<Users className="h-4 w-4 text-muted-foreground" />}
+            isLoading={isLoading}
+          />
+          <StatsCard
+            title="New Posts"
+            value={stats?.newPosts}
+            icon={<PlusCircle className="h-4 w-4 text-muted-foreground" />}
+            isLoading={isLoading}
+          />
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          title="Total Posts"
-          value={stats?.totalPosts}
-          icon={<FileText className="h-4 w-4 text-muted-foreground" />}
-          isLoading={isLoading}
-        />
-        <StatsCard
-          title="Total Views"
-          value={stats?.totalViews}
-          icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-          isLoading={isLoading}
-        />
-        <StatsCard
-          title="Subscribers"
-          value={stats?.subscribers}
-          icon={<Users className="h-4 w-4 text-muted-foreground" />}
-          isLoading={isLoading}
-        />
-        <StatsCard
-          title="New Posts"
-          value={stats?.newPosts}
-          icon={<PlusCircle className="h-4 w-4 text-muted-foreground" />}
-          isLoading={isLoading}
-        />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="">Recent Posts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {isLoading
-                ? Array(3)
-                    .fill(0)
-                    .map((_, i) => (
-                      <div key={i} className="flex items-center">
-                        <Skeleton className="h-11 w-11 rounded-full" />
-                        <div className="ml-4 space-y-2">
-                          <Skeleton className="h-4 w-[200px]" />
-                          <Skeleton className="h-4 w-[160px]" />
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          <Card className="">
+            <CardHeader>
+              <CardTitle className="">Recent Posts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {isLoading
+                  ? Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <div key={i} className="flex items-center">
+                          <Skeleton className="h-11 w-11 rounded-full" />
+                          <div className="ml-4 space-y-2">
+                            <Skeleton className="h-4 w-[200px]" />
+                            <Skeleton className="h-4 w-[160px]" />
+                          </div>
+                        </div>
+                      ))
+                  : recentPosts?.map((post) => (
+                      <div key={post._id} className="flex items-center">
+                        <Avatar>
+                          <AvatarImage src={post.author.profileImg} />
+                          <AvatarFallback>
+                            <User />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="ml-4 space-y-1 w-full">
+                          <Link
+                            href={`/blogs/${post._id}`}
+                            className="text-sm font-medium leading-none block"
+                          >
+                            {post.title}
+                          </Link>
+                          <p className="flex justify-between text-sm text-muted-foreground">
+                            <span>
+                              {new Date(post.createdAt).toLocaleDateString()}
+                            </span>
+                            <span>{post.views} views</span>
+                          </p>
                         </div>
                       </div>
-                    ))
-                : recentPosts?.map((post) => (
-                    <div key={post._id} className="flex items-center">
-                      <Avatar>
-                        <AvatarImage src={post.author.profileImg} />
-                        <AvatarFallback>
-                          <User />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="ml-4 space-y-1 w-full">
-                        <Link
-                          href={`/blogs/${post._id}`}
-                          className="text-sm font-medium leading-none block" 
-                        >
-                          {post.title}
-                        </Link>
-                        <p className="flex justify-between text-sm text-muted-foreground">
-                          <span>
-                            {new Date(post.createdAt).toLocaleDateString()}
-                          </span>
-                          <span>{post.views} views</span>
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="space-y-2">
-                <Label htmlFor="new-post-title">New Post Title</Label>
-                <Input
-                  id="new-post-title"
-                  placeholder="Enter post title"
-                  value={newPostTitle}
-                  onChange={(e) => setNewPostTitle(e.target.value)}
-                />
+                    ))}
               </div>
-              <Link href={`/admin/addProduct?title=${newPostTitle}`}>
-                <Button className="w-full mt-2">
-                  Create New Post
-                  <PlusCircle className="ml-2 h-4 w-4" />
+            </CardContent>
+          </Card>
+          <Card className="">
+            <CardHeader>
+              <CardTitle className="">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                {/* // Todo: Fix this */}
+                {/* <div className="space-y-2">
+                  <Label htmlFor="new-post-title">New Post Title</Label>
+                  <Input
+                    id="new-post-title"
+                    placeholder="Enter post title"
+                    value={newPostTitle}
+                    onChange={(e) => setNewPostTitle(e.target.value)}
+                  />
+                </div> */}
+                <Link href={`/admin/addProduct?title=${newPostTitle}`}>
+                  <Button className="w-full mt-2">
+                    Create New Post
+                    <PlusCircle className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <Link href="/admin/blogList" passHref>
+                <Button variant="outline" className="w-full mt-4">
+                  View All Posts
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-            </div>
-            <Link href="/admin/subscribers" passHref>
-              <Button variant="outline" className="w-full mt-4">
-                View All Subscribers
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              <Link href="/admin/subscribers" passHref>
+                <Button variant="outline" className="w-full mt-4">
+                  View All Subscribers
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 function StatsCard({ title, value, icon, isLoading }) {
   return (
-    <Card className="border-2">
+    <Card className="">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {icon}
