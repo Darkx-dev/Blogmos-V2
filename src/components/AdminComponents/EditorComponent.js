@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   BoldItalicUnderlineToggles,
   MDXEditor,
@@ -22,15 +22,19 @@ import {
   thematicBreakPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Maximize2, Minimize2, AlertTriangle } from "lucide-react";
 import "highlight.js/styles/github-dark.css";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+const MAX_CONTENT_LENGTH = 10000; // Maximum allowed content length
 
 export default function EditorComponent({ markdown, setContent }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [error, setError] = useState(null);
   const editorRef = useRef(null);
 
   const toggleFullScreen = useCallback((e) => {
-    e.preventDefault(); // Prevent the default button behavior
+    e.preventDefault();
     setIsFullScreen((prev) => !prev);
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -39,17 +43,43 @@ export default function EditorComponent({ markdown, setContent }) {
     }
   }, []);
 
+  const handleContentChange = useCallback((newContent) => {
+    if (newContent.length > MAX_CONTENT_LENGTH) {
+      setError(`Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters`);
+    } else {
+      setError(null);
+      setContent(newContent);
+    }
+  }, [setContent]);
+
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && isFullScreen) {
+        toggleFullScreen(event);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isFullScreen, toggleFullScreen]);
+
   return (
-    <div
-      className={`w-full overflow-auto max-h-screen scrollbar-hide ${
-        isFullScreen ? "fixed inset-0 z-[30] bg-background" : ""
-      }`}
-    >
-      <div
-        className={`relative flex flex-col ${isFullScreen ? "h-screen" : ""}`}
-      >
+    <div className={`w-full overflow-auto max-h-screen scrollbar-hide ${
+      isFullScreen ? "fixed inset-0 z-[30] bg-background" : ""
+    }`}>
+      <div className={`relative flex flex-col ${isFullScreen ? "h-screen" : ""}`}>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <MDXEditor
-          onChange={setContent}
+          onChange={handleContentChange}
           ref={editorRef}
           markdown={markdown}
           className={`${
@@ -65,7 +95,12 @@ export default function EditorComponent({ markdown, setContent }) {
             headingsPlugin(),
             listsPlugin(),
             markdownShortcutPlugin(),
-            imagePlugin(),
+            imagePlugin({
+              imageUploadHandler: async () => {
+                // Implement your image upload logic here
+                return Promise.reject("Image upload not implemented");
+              },
+            }),
             diffSourcePlugin(),
             thematicBreakPlugin(),
             codeBlockPlugin({ defaultCodeBlockLanguage: "javascript" }),
@@ -85,22 +120,30 @@ export default function EditorComponent({ markdown, setContent }) {
             }),
             toolbarPlugin({
               toolbarContents: () => (
-                <div className="flex flex-wrap justify-between gap-2 w-full dark:gray-600 border-t h-full p-2">
-                  <BlockTypeSelect />
-                  <UndoRedo />
-                  <BoldItalicUnderlineToggles />
-                  <ListsToggle />
-                  <InsertCodeBlock />
-                  <InsertImage />
-                  <DiffSourceToggleWrapper />
-                  <InsertThematicBreak />
-                  <button className="pr-2" onClick={toggleFullScreen}>
-                    {isFullScreen ? (
-                      <Minimize2 className="h-4 w-4" />
-                    ) : (
-                      <Maximize2 className="h-4 w-4" />
-                    )}
-                  </button>
+                <div className="flex flex-wrap justify-between items-center gap-2 w-full dark:gray-600 border-t h-full p-2">
+                  <div className="flex items-center gap-2">
+                    <BlockTypeSelect />
+                    <UndoRedo />
+                    <BoldItalicUnderlineToggles />
+                    <ListsToggle />
+                    <InsertCodeBlock />
+                    <InsertImage />
+                    <InsertThematicBreak />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DiffSourceToggleWrapper />
+                    <button
+                      className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                      onClick={toggleFullScreen}
+                      aria-label={isFullScreen ? "Exit full screen" : "Enter full screen"}
+                    >
+                      {isFullScreen ? (
+                        <Minimize2 className="h-4 w-4" />
+                      ) : (
+                        <Maximize2 className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               ),
             }),
