@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   PlusCircle,
   TrendingUp,
@@ -12,39 +12,39 @@ import {
   FileText,
   ArrowRight,
   User,
-} from "lucide-react"
-import Link from "next/link"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { AvatarFallback } from "@radix-ui/react-avatar"
+} from "lucide-react";
+import Link from "next/link";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { AvatarFallback } from "@radix-ui/react-avatar";
 
 export default function Dashboard() {
-  const [stats, setStats] = useState(null)
-  const [recentPosts, setRecentPosts] = useState(null)
-  const [newPostTitle, setNewPostTitle] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState(null);
+  const [recentPosts, setRecentPosts] = useState(null);
+  const [newPostTitle, setNewPostTitle] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchDashboardData()
-    }, 200)
-    return () => clearTimeout(timer)
-  }, [])
+      fetchDashboardData();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
-      const statsResponse = await fetch("/api/dashboard/stats")
-      const statsData = await statsResponse.json()
-      setStats(statsData)
+      const statsResponse = await fetch("/api/dashboard/stats");
+      const statsData = await statsResponse.json();
+      setStats(statsData);
 
-      const postsResponse = await fetch("/api/blog?page=1&limit=4")
-      const postsData = await postsResponse.json()
-      setRecentPosts(postsData.docs)
+      const postsResponse = await fetch("/api/blog?page=1&limit=4");
+      const postsData = await postsResponse.json();
+      setRecentPosts(postsData.docs);
     } catch (error) {
-      console.error("Error fetching dashboard data:", error)
+      console.error("Error fetching dashboard data:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -78,7 +78,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle className="">Recent Posts</CardTitle>
           </CardHeader>
@@ -98,27 +98,32 @@ export default function Dashboard() {
                     ))
                 : recentPosts?.map((post) => (
                     <div key={post._id} className="flex items-center">
-                    <Avatar >
-                      <AvatarImage src={post.author.profileImg}/>
-                      <AvatarFallback>
-                        <User/>
-                      </AvatarFallback>
-                    </Avatar>
-                      <div className="ml-4 space-y-1">
-                        <Link href={`/blogs/${post._id}`} className="text-sm font-medium leading-none">
+                      <Avatar>
+                        <AvatarImage src={post.author.profileImg} />
+                        <AvatarFallback>
+                          <User />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="ml-4 space-y-1 w-full">
+                        <Link
+                          href={`/blogs/${post._id}`}
+                          className="text-sm font-medium leading-none block" 
+                        >
                           {post.title}
                         </Link>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(post.createdAt).toLocaleDateString()}
+                        <p className="flex justify-between text-sm text-muted-foreground">
+                          <span>
+                            {new Date(post.createdAt).toLocaleDateString()}
+                          </span>
+                          <span>{post.views} views</span>
                         </p>
                       </div>
-                      <div></div>
                     </div>
                   ))}
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle className="">Quick Actions</CardTitle>
           </CardHeader>
@@ -150,12 +155,12 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
 function StatsCard({ title, value, icon, isLoading }) {
   return (
-    <Card>
+    <Card className="border-2">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {icon}
@@ -168,7 +173,7 @@ function StatsCard({ title, value, icon, isLoading }) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function Label({ htmlFor, children }) {
@@ -179,5 +184,5 @@ function Label({ htmlFor, children }) {
     >
       {children}
     </label>
-  )
+  );
 }
