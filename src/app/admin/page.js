@@ -105,13 +105,14 @@ export default function Dashboard() {
                       </AvatarFallback>
                     </Avatar>
                       <div className="ml-4 space-y-1">
-                        <p className="text-sm font-medium leading-none">
+                        <Link href={`/blogs/${post._id}`} className="text-sm font-medium leading-none">
                           {post.title}
-                        </p>
+                        </Link>
                         <p className="text-sm text-muted-foreground">
                           {new Date(post.createdAt).toLocaleDateString()}
                         </p>
                       </div>
+                      <div></div>
                     </div>
                   ))}
             </div>

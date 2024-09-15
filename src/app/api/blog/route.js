@@ -114,9 +114,11 @@ export async function GET(req) {
 export async function POST(req) {
   // Check authentication
   const session = await auth()
+  
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
+
   try {
     await connectDatabase(); // Ensure DB connection
 
