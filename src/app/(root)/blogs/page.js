@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { Toaster } from "@/components/ui/toaster";
 import "react-toastify/dist/ReactToastify.css";
 
-const Home = () => {
+const Blogs = () => {
   return (
     <main className="min-h-screen flex flex-col">
       <Header />
@@ -16,4 +16,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Blogs;

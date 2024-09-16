@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import NotFound from "../not-found";
+import NotFound from "../../not-found";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function Layout({ children }) {

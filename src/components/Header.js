@@ -37,9 +37,9 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-200 dark:bg-transparent px-5 py-8 md:px-12 lg:px-28 relative h-[">
+    <header className="bg-gray-200 dark:bg-background px-5 py-8 md:px-12 lg:px-28 relative">
       <NavBar />
-      <div className="my-10 text-center">
+      <div className="my-10 text-center pt-10">
         <h1 className="text-4xl font-bold text-gray-800 dark:text-white sm:text-6xl">
           Latest Blogs
         </h1>
