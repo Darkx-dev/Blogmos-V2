@@ -16,6 +16,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning={true} className="scrollbar-hide">
+    <head>
+      <link rel="icon" href="/images/logo.png" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>{metadata.title}</title>
+    </head>
       <body className={`${outfit.className} antialiased scrollbar-hide`}>
         <SessionProvider>
           {" "}

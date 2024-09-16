@@ -130,7 +130,7 @@ export default function BlogList() {
         {blogs.map((blog) => (
           <TableRow
             key={blog._id}
-            className="hover:bg-gray-50 transition-colors"
+            className=" transition-colors"
           >
             <TableCell className="font-medium">
               <div className="flex items-center space-x-2">
@@ -151,7 +151,7 @@ export default function BlogList() {
             <TableCell>
               <Link
                 href={`/blogs/${blog._id}`}
-                className="text-blue-600 hover:underline"
+                className=" hover:underline"
               >
                 {blog.title}
               </Link>
@@ -219,7 +219,7 @@ export default function BlogList() {
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50">
+            <TableRow>
               <TableHead className="w-[100px]">Author</TableHead>
               <TableHead>Blog Title</TableHead>
               <TableHead className="hidden sm:table-cell">Date</TableHead>
@@ -245,7 +245,7 @@ export default function BlogList() {
               onChange={handleSearch}
               type="text"
               name="query"
-              className="pl-8 w-full sm:w-[300px] focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
+              className="pl-8 w-full sm:w-[300px] focus-visible:ring-0 focus-visible:ring-offset-0"
               aria-label="Search blogs"
             />
           </div>
@@ -288,7 +288,7 @@ function BlogListSkeleton() {
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-50">
+          <TableRow>
             <TableHead className="w-[100px]">Author</TableHead>
             <TableHead>Blog Title</TableHead>
             <TableHead className="hidden sm:table-cell">Date</TableHead>

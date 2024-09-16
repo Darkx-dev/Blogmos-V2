@@ -50,8 +50,8 @@ export default function Dashboard() {
   return (
     <Card className="min-h-[calc(100vh-80px)]">
       <CardContent>
-        <CardTitle className=" font-bold">Dashboard</CardTitle>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <CardTitle className="text-xl font-bold">Dashboard</CardTitle>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-4">
           <StatsCard
             title="Total Posts"
             value={stats?.totalPosts}

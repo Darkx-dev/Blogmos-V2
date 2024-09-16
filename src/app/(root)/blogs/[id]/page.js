@@ -75,7 +75,7 @@ const Header = () => (
 );
 
 const HeroSection = ({ data }) => (
-  <section className="py-16 px-6 text-center bg-secondary/50">
+  <section className="pt-20 px-6 text-center dark:bg-transparent">
     <div className="max-w-4xl mx-auto">
       <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.title}</h1>
       <div className="flex items-center justify-center space-x-4">

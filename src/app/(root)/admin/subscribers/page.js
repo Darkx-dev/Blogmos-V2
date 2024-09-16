@@ -138,7 +138,7 @@ const Subscribers = () => {
       <div className="rounded-md border overflow-hidden ">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50">
+            <TableRow>
               <TableHead>Email Address</TableHead>
               <TableHead className="hidden sm:table-cell">Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -148,7 +148,7 @@ const Subscribers = () => {
             {subscribers.map((subscriber) => (
               <TableRow
                 key={subscriber._id}
-                className="hover:bg-gray-50 transition-colors"
+                className="transition-colors"
               >
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell className="hidden sm:table-cell">
@@ -195,7 +195,7 @@ const Subscribers = () => {
               onChange={handleSearch}
               type="text"
               name="query"
-              className="pl-8 w-full sm:w-[300px] focus-visible:ring-0 focus-visible:ring-offset-0 bg-white"
+              className="pl-8 w-full sm:w-[300px] focus-visible:ring-0 focus-visible:ring-offset-0"
               aria-label="Search subscribers"
             />
           </div>
@@ -238,7 +238,7 @@ const SubscribersSkeleton = () => {
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-50">
+          <TableRow>
             <TableHead>Email Address</TableHead>
             <TableHead className="hidden sm:table-cell">Date</TableHead>
             <TableHead className="text-right">Actions</TableHead>

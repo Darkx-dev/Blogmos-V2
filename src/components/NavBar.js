@@ -143,7 +143,7 @@ const NavBar = ({ className }) => {
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
+              <SheetContent side="left" className="backdrop-blur-md bg-transparent">
                 <SheetHeader>
                   <SheetTitle>Blogmos</SheetTitle>
                   <SheetDescription>Navigate our research website</SheetDescription>
@@ -156,7 +156,7 @@ const NavBar = ({ className }) => {
                     <Link href="/publications" className="text-sm font-medium hover:underline">
                       Publications
                     </Link>
-                    <Link href="/blog" className="text-sm font-medium hover:underline">
+                    <Link href="/blogs" className="text-sm font-medium hover:underline">
                       Blog
                     </Link>
                     <Link href="/contact" className="text-sm font-medium hover:underline">

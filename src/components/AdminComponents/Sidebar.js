@@ -35,7 +35,7 @@ export default function Sidebar({ className }) {
   const pathname = usePathname()
 
   return (
-    <aside className={cn("w-64 bg-background border-r", className)}>
+    <aside className={cn("", className)}>
       <div className="flex h-16 items-center border-b px-6 gap-2">
         <Image src="/images/logo.png" width={25} height={25} alt="logo" className="dark:invert"/>
         <Link href="/">

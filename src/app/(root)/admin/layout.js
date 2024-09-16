@@ -49,7 +49,7 @@ export default function Layout({ children }) {
                   <span className="sr-only">Open sidebar</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-64">
+              <SheetContent side="left" className="bg-transparent backdrop-blur-md">
                 <SidebarAdmin />
               </SheetContent>
             </Sheet>
