@@ -257,6 +257,7 @@ export async function PUT(req) {
       category: formData.get("category") || blog.category,
       content: formData.get("content") || blog.content,
       image: imageUri,
+      tags: formData.get("tags")?formData.get("tags").split("#") : blog.tags,
     };
 
     // Update the blog post
