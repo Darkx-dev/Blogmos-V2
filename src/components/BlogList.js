@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState, useCallback } from "react"
-import BlogItem from "./BlogItem"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ChevronLeft, ChevronRight, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { motion, AnimatePresence } from "framer-motion"
+import React, { useEffect, useState, useCallback } from "react";
+import BlogItem from "./BlogItem";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { motion, AnimatePresence } from "framer-motion";
 
-const ITEMS_PER_PAGE = 9
-const categories = ["All", "Technology", "Startup", "Lifestyle"]
+const ITEMS_PER_PAGE = 9;
+const categories = ["All", "Technology", "Startup", "Lifestyle"];
 
 export default function BlogList() {
-  const [activeCategory, setActiveCategory] = useState("All")
-  const [blogs, setBlogs] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isSearchVisible, setIsSearchVisible] = useState(false)
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const fetchBlogs = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await axios.get("/api/blog", {
         params: {
@@ -31,48 +31,50 @@ export default function BlogList() {
           query: searchQuery,
           category: activeCategory !== "All" ? activeCategory : undefined,
         },
-      })
-      setBlogs(response.data.docs)
-      setTotalPages(response.data.totalPages)
+      });
+      setBlogs(response.data.docs);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
-      console.error("Error fetching blogs:", error)
+      console.error("Error fetching blogs:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [currentPage, searchQuery, activeCategory])
+  }, [currentPage, searchQuery, activeCategory]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchBlogs()
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [fetchBlogs])
+      fetchBlogs();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [fetchBlogs]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage)
+      setCurrentPage(newPage);
     }
-  }
+  };
 
   const handleCategoryChange = (category) => {
-    setActiveCategory(category)
-    setCurrentPage(1)
-  }
+    setActiveCategory(category);
+    setCurrentPage(1);
+  };
 
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value)
-    setCurrentPage(1)
-  }
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" }
-    return new Date(dateString).toLocaleDateString(undefined, options)
-  }
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
-    <div className="container mx-auto px-4 sm:max-w-7xl py-12">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-4xl font-bold text-primary">Our Blogs</h1>
+    <div className="container mx-auto px-4 sm:max-w-7xl pb-12">
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <h4 className="sm:text-4xl font-bold text-primary leading-none m-0 text-nowrap">
+          Our Blogs
+        </h4>
         <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
@@ -118,7 +120,7 @@ export default function BlogList() {
       <div className="mb-12 min-h-[60vh]">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array(ITEMS_PER_PAGE)
+            {Array(3)
               .fill(0)
               .map((_, index) => (
                 <Skeleton key={index} className="w-full h-[400px] rounded-lg" />
@@ -145,11 +147,13 @@ export default function BlogList() {
             ))}
           </motion.div>
         ) : (
-          <p className="text-center text-lg text-muted-foreground">No blogs found.</p>
+          <p className="text-center text-lg text-muted-foreground">
+            No blogs found.
+          </p>
         )}
       </div>
 
-      {!loading && blogs.length > 0 && (
+      {!loading && blogs.length > ITEMS_PER_PAGE && (
         <div className="flex justify-center items-center space-x-2">
           <Button
             variant="outline"
@@ -175,5 +179,5 @@ export default function BlogList() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -11,11 +11,9 @@ import UserDropdown from "./AdminComponents/UserDropdown"
 import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import {
@@ -80,52 +78,16 @@ const NavBar = ({ className }) => {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Research Areas</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] list-none">
-                      <li className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                            href="/research"
-                          >
-                            <div className="mb-2 mt-4 text-lg font-medium">Research Overview</div>
-                            <p className="text-sm leading-tight text-muted-foreground">
-                              Explore Dr. Smith&apos;s groundbreaking research in biotechnology.
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </li>
-                      <ListItem href="/research/genetic-engineering" title="Genetic Engineering">
-                        CRISPR and advanced gene editing techniques
-                      </ListItem>
-                      <ListItem href="/research/synthetic-biology" title="Synthetic Biology">
-                        Designing new biological parts and systems
-                      </ListItem>
-                      <ListItem href="/research/bioinformatics" title="Bioinformatics">
-                        Computational approaches in biotechnology
-                      </ListItem>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/publications" legacyBehavior passHref>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Publications
+                  <Link href="/" legacyBehavior passHref>
+                    <NavigationMenuLink className=" mx-4 hover:border-current transition-all py-2 border-b-2 border-transparent">
+                      Home
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link href="/blogs" legacyBehavior passHref>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Blog
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/contact" legacyBehavior passHref>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Contact
+                    <NavigationMenuLink className=" mx-4 hover:border-current transition-all py-2 border-b-2 border-transparent">
+                      Blogs
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
@@ -146,21 +108,15 @@ const NavBar = ({ className }) => {
               <SheetContent side="left" className="backdrop-blur-md bg-transparent">
                 <SheetHeader>
                   <SheetTitle>Blogmos</SheetTitle>
-                  <SheetDescription>Navigate our research website</SheetDescription>
+                  <SheetDescription>Explore the cosmos of blogmos</SheetDescription>
                 </SheetHeader>
                 <div className="py-4">
                   <nav className="flex flex-col space-y-4">
-                    <Link href="/research" className="text-sm font-medium hover:underline">
-                      Research Areas
-                    </Link>
-                    <Link href="/publications" className="text-sm font-medium hover:underline">
-                      Publications
+                    <Link href="/blogs" className="text-sm font-medium hover:underline">
+                      Home
                     </Link>
                     <Link href="/blogs" className="text-sm font-medium hover:underline">
                       Blog
-                    </Link>
-                    <Link href="/contact" className="text-sm font-medium hover:underline">
-                      Contact
                     </Link>
                   </nav>
                 </div>
