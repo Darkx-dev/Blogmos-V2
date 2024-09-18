@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
+import { Separator } from "./ui/separator";
 
 const ITEMS_PER_PAGE = 9;
 const categories = ["All", "Technology", "Startup", "Lifestyle"];
@@ -70,114 +71,121 @@ export default function BlogList() {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:max-w-7xl pb-12">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <h4 className="sm:text-4xl font-bold text-primary leading-none m-0 text-nowrap">
-          Our Blogs
-        </h4>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSearchVisible(!isSearchVisible)}
-            aria-label="Toggle search"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
-          <AnimatePresence>
-            {isSearchVisible && (
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: "auto", opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Input
-                  placeholder="Search blogs..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full max-w-xs"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      <div className="mb-8 flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant={activeCategory === category ? "default" : "outline"}
-            onClick={() => handleCategoryChange(category)}
-            className="rounded-full"
-          >
-            {category}
-          </Button>
-        ))}
-      </div>
-
-      <div className="mb-12 min-h-[60vh]">
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array(3)
-              .fill(0)
-              .map((_, index) => (
-                <Skeleton key={index} className="w-full h-[400px] rounded-lg" />
-              ))}
+    <>
+      <Separator />
+      <div className="container mx-auto px-4 sm:max-w-7xl pb-12 mt-10">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <h4 className="sm:text-4xl font-bold text-primary leading-none m-0 text-nowrap">
+            Our Blogs
+          </h4>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchVisible(!isSearchVisible)}
+              aria-label="Toggle search"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+            <AnimatePresence>
+              {isSearchVisible && (
+                <motion.div
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: "auto", opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Input
+                    placeholder="Search blogs..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="w-full max-w-xs"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        ) : blogs.length > 0 ? (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            {blogs.map((blog) => (
-              <BlogItem
-                key={blog._id}
-                id={blog._id}
-                title={blog.title}
-                description={blog.description}
-                image={blog.image}
-                category={blog.category}
-                createdAt={formatDate(blog.createdAt)}
-                updatedAt={formatDate(blog.updatedAt)}
-              />
-            ))}
-          </motion.div>
-        ) : (
-          <p className="text-center text-lg text-muted-foreground">
-            No blogs found.
-          </p>
+        </div>
+
+        <div className="mb-8 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={activeCategory === category ? "default" : "outline"}
+              onClick={() => handleCategoryChange(category)}
+              className="rounded-full"
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+
+        <div className="mb-12 min-h-[60vh]">
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array(3)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    className="w-full h-[400px] rounded-lg"
+                  />
+                ))}
+            </div>
+          ) : blogs.length > 0 ? (
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              // className="grid sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {blogs.map((blog) => (
+                <BlogItem
+                  key={blog._id}
+                  id={blog._id}
+                  title={blog.title}
+                  description={blog.description}
+                  image={blog.image}
+                  category={blog.category}
+                  createdAt={formatDate(blog.createdAt)}
+                  updatedAt={formatDate(blog.updatedAt)}
+                />
+              ))}
+            </motion.div>
+          ) : (
+            <p className="text-center text-lg text-muted-foreground">
+              No blogs found.
+            </p>
+          )}
+        </div>
+
+        {!loading && blogs.length > ITEMS_PER_PAGE && (
+          <div className="flex justify-center items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+            <span className="text-sm font-medium">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
         )}
       </div>
-
-      {!loading && blogs.length > ITEMS_PER_PAGE && (
-        <div className="flex justify-center items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-          <span className="text-sm font-medium">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-            <ChevronRight className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

@@ -78,7 +78,7 @@ const Subscribers = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchSubscribers();
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [fetchSubscribers]);

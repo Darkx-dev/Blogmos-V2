@@ -23,6 +23,7 @@ export async function GET(req) {
     const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
     const query = req.nextUrl.searchParams.get("query");
     const category = req.nextUrl.searchParams.get("category");
+    const admin = req.nextUrl.searchParams.get("admin");
 
     const options = {
       page,
@@ -34,17 +35,19 @@ export async function GET(req) {
         path: "author",
         select: "name profileImg",
       },
+      select: {
+        image: admin ? 0 : 1,
+        description: admin ? 0 : 1,
+      },
     };
 
     let filter = {};
     /* 
     {
       title: Regex_expresion,
-      category: else_than _ALL,
-      
+      category: else_then_all,
     } 
     */
-
     if (query) {
       const searchRegex = new RegExp(query, "i");
       filter.title = searchRegex;
@@ -113,8 +116,7 @@ export async function GET(req) {
 // API endpoint to upload blog posts
 export async function POST(req) {
   // Check authentication
-  const session = await auth()
-  
+  const session = await auth();
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -157,6 +159,7 @@ export async function POST(req) {
       author: formData.get("author"),
       authorImg: formData.get("authorImg"),
       content: formData.get("content"),
+      tags: formData.get("tags").split("#"),
     };
 
     // Validate required fields
@@ -201,7 +204,7 @@ export async function POST(req) {
 // API endpoint to update a blog post
 export async function PUT(req) {
   // Check authentication
-  const session = await auth()
+  const session = await auth();
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -285,7 +288,7 @@ export async function PUT(req) {
 // API endpoint to delete a blog post
 export async function DELETE(req) {
   // Check authentication
-  const session = await auth()
+  const session = await auth();
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }

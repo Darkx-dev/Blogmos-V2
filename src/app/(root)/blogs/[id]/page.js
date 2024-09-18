@@ -107,17 +107,17 @@ const ArticleContent = ({ data }) => (
       className="w-full h-auto aspect-video object-cover rounded-lg shadow-md mb-8"
     />
     <p className="text-xl text-muted-foreground mb-8">{data.description}</p>
-    <div className="prose dark:prose-invert max-w-none">
+    <div className="prose dark:prose-invert max-w-none mb-10">
       <Markdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}
         components={{
-          img: ({ node,width, height, ...props }) => (
+          img: ({ node, width, height, ...props }) => (
             <Image
               src={props.src}
               alt={props.alt || ""}
               width={width || 400}
-              height={height ||300}
+              height={height || 300}
               className="my-4 rounded-md max-w-full size-full mx-auto"
             />
           ),
@@ -131,8 +131,25 @@ const ArticleContent = ({ data }) => (
         {purify(data.content)}
       </Markdown>
     </div>
+    <div className="flex flex-wrap gap-2">
+    <Tags tags={data?.tags} />
+    </div>
   </article>
 );
+
+const Tags = ({ tags }) => {
+  if (tags)
+    return tags.map((tag) => {
+      return (
+        <span
+          key={tag}
+          className="bg-secondary rounded-full px-2 py-1 w-fit text-nowrap inline-block"
+        >
+          #{tag}
+        </span>
+      );
+    });
+};
 
 const ShareSection = ({ title }) => (
   <div className="max-w-3xl mx-auto my-12 px-6 shadow-none">

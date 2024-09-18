@@ -38,7 +38,7 @@ export default function Header() {
   }
 
   return (
-    <header className=" px-5 py-8 md:px-12 lg:px-28 relative">
+    <header className="px-2 py-8 relative">
       <NavBar />
       <motion.div 
         className="my-10 text-center pt-10"
@@ -46,7 +46,7 @@ export default function Header() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold sm:text-8xl mb-4">
+        <h1 className="text-5xl font-bold sm:text-8xl mb-4">
           BLOGS
         </h1>
         <p className="mx-auto mt-4 max-w-[740px] text-sm text-gray-400 sm:text-base">

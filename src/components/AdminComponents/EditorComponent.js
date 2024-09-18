@@ -59,7 +59,7 @@ export default function EditorComponent({ markdown, setContent }) {
 
   useEffect(() => {
     const handleEscKey = (event) => {
-      if (event.key === "Escape" && isFullScreen) {
+      if (event.key === "Escape") {
         toggleFullScreen(event);
       }
     };
@@ -70,16 +70,13 @@ export default function EditorComponent({ markdown, setContent }) {
       document.removeEventListener("keydown", handleEscKey);
     };
   }, [isFullScreen, toggleFullScreen]);
-
   return (
     <div
       className={`w-full overflow-auto max-h-screen scrollbar-hide ${
         isFullScreen ? "fixed inset-0 z-[30]" : ""
       }`}
     >
-      <div
-        className={`relative flex flex-col ${isFullScreen ? "h-screen" : ""}`}
-      >
+      <div className={` flex flex-col ${isFullScreen ? "h-screen" : ""}`}>
         {error && (
           <Alert>
             <Terminal className="h-4 w-4" />
@@ -95,10 +92,10 @@ export default function EditorComponent({ markdown, setContent }) {
           markdown={markdown}
           className={`${
             isFullScreen
-              ? "fixed border-none h-full overflow-auto scrollbar-hide w-full top-0 left-0 backdrop-blur-md"
+              ? "h-screen overflow-auto hide-scrollbar bg-secondary"
               : ""
           }`}
-          contentEditableClassName={`mb-2 dark:shadow-white dark:text-white border rounded-lg p-4 ${
+          contentEditableClassName={`mb-2 dark:shadow-white dark:text-white rounded-lg p-2 ${
             isFullScreen && "min-h-screen"
           }`}
           placeholder="Write your blog post here..."
@@ -131,7 +128,7 @@ export default function EditorComponent({ markdown, setContent }) {
             }),
             toolbarPlugin({
               toolbarContents: () => (
-                <div className="flex flex-wrap justify-between items-center gap-2 w-full dark:gray-600 border-t h-full p-2">
+                <div className="flex flex-wrap justify-between items-center gap-2 w-full dark:gray-600 h-full p-[3px]">
                   <div className="flex items-center gap-2">
                     <BlockTypeSelect />
                     <UndoRedo />

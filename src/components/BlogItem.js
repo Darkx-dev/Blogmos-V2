@@ -14,7 +14,7 @@ export default function BlogItem({ id, title, category, description, image, crea
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <Card className="relative overflow-hidden h-[400px] group">
+      <Card className="relative overflow-hidden h-[350px] group">
         <Image
           priority
           src={image}

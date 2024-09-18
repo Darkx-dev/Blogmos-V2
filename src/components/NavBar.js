@@ -14,7 +14,6 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import {
   Sheet,
@@ -61,8 +60,8 @@ const NavBar = ({ className }) => {
         className
       )}
     >
-      <div className="container mx-auto px-4 py-2">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 ">
+        <div className="flex items-center justify-between w-full">
           <Link href="/" className="flex items-center gap-[3px] text-base font-semibold sm:text-2xl">
             <Image
               src="/images/logo.png"
@@ -105,7 +104,7 @@ const NavBar = ({ className }) => {
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="backdrop-blur-md bg-transparent">
+              <SheetContent side="left" className="backdrop-blur-md bg-transparent border-none">
                 <SheetHeader>
                   <SheetTitle>Blogmos</SheetTitle>
                   <SheetDescription>Explore the cosmos of blogmos</SheetDescription>

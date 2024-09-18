@@ -8,7 +8,6 @@ const blogSchema = new mongoose.Schema(
     description: { type: String, required: true },
     content: { type: String, required: true },
     category: { type: String, required: true },
-    // author: { type: String, required: true },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -19,7 +18,6 @@ const blogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    // Add an array of IP addresses that have viewed the blog
     viewedBy: [
       {
         ipAddress: String,
@@ -27,6 +25,12 @@ const blogSchema = new mongoose.Schema(
           type: Date,
           default: Date.now,
         },
+      },
+    ],
+    tags: [
+      {
+        type: String,
+        required: true,
       },
     ],
   },

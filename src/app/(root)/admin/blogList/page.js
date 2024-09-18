@@ -69,6 +69,7 @@ export default function BlogList() {
           page: currentPage,
           limit: 10,
           query: debouncedSearchQuery,
+          admin: true,
         },
       });
       setBlogs(response.data.docs);
@@ -92,7 +93,11 @@ export default function BlogList() {
   }, [currentPage, debouncedSearchQuery, toast]);
 
   useEffect(() => {
-    fetchBlogs();
+    const timer = setTimeout(() => {
+      fetchBlogs();
+    }, 200);
+
+    return () => clearTimeout(timer);
   }, [fetchBlogs]);
 
   const handlePageChange = (newPage) => {
@@ -128,10 +133,7 @@ export default function BlogList() {
     () => (
       <TableBody>
         {blogs.map((blog) => (
-          <TableRow
-            key={blog._id}
-            className=" transition-colors"
-          >
+          <TableRow key={blog._id} className=" transition-colors">
             <TableCell className="font-medium">
               <div className="flex items-center space-x-2">
                 <Avatar className="h-8 w-8">
@@ -149,10 +151,7 @@ export default function BlogList() {
               </div>
             </TableCell>
             <TableCell>
-              <Link
-                href={`/blogs/${blog._id}`}
-                className=" hover:underline"
-              >
+              <Link href={`/blogs/${blog._id}`} className=" hover:underline">
                 {blog.title}
               </Link>
             </TableCell>

@@ -17,6 +17,7 @@ import Link from "next/link";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Separator } from "@/components/ui/separator";
+import axios from "axios";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -37,8 +38,14 @@ export default function Dashboard() {
       const statsData = await statsResponse.json();
       setStats(statsData);
 
-      const postsResponse = await fetch("/api/blog?page=1&limit=4");
-      const postsData = await postsResponse.json();
+      const postsResponse = await axios.get("/api/blog", {
+        params: {
+          page: 1,
+          limit: 5,
+          admin: true
+        }
+      })
+      const postsData = postsResponse.data
       setRecentPosts(postsData.docs);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);

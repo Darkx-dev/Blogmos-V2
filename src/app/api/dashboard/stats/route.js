@@ -19,7 +19,7 @@ export async function GET() {
   try {
     connectDatabase()
 
-    const blogs = await BlogModel.find({}, "views");
+    const blogs = await BlogModel.find({}, "views")
     const totalPosts = blogs.length
     const subscribers = await EmailModel.estimatedDocumentCount();
     const totalUsers = await UserModel.estimatedDocumentCount()
@@ -39,6 +39,7 @@ export async function GET() {
       subscribers,
       newPosts,
       totalUsers,
+      blogs
     });
   } catch (error) {
     console.error("Error in dashboard stats API:", error);

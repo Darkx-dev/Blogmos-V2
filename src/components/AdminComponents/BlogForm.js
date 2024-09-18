@@ -14,8 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import EditorComponent from "@/components/AdminComponents/EditorComponent";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Loader2, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Upload, Loader2, AlertCircle, X, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
@@ -40,15 +40,18 @@ const formSchema = z.object({
     .max(200, "Description is too long"),
   category: z.enum(["Startup", "Technology", "Lifestyle"]),
   content: z.string().min(1, "Content is required"),
-  image: z.instanceof(File).optional(),
+  image: z.any().optional(),
+  tags: z.array(z.string()).default([]),
 });
+
+const predefinedTags = ["React", "Next.js", "JavaScript", "Web Development"];
 
 const BlogForm = ({ initialData, isEditMode }) => {
   const { data: session } = useSession();
-  const [image, setImage] = useState(initialData?.image || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertInfo, setAlertInfo] = useState(null);
   const fileInputRef = useRef(null);
+  const [newTag, setNewTag] = useState("");
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -58,36 +61,67 @@ const BlogForm = ({ initialData, isEditMode }) => {
       category: initialData?.category || "Startup",
       content: initialData?.content || "",
       image: initialData?.image || null,
+      tags: initialData?.tags || [],
     },
   });
 
+  const { setValue, watch } = form;
+  const image = watch("image");
+  const tags = watch("tags");
+
   useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
+      Object.keys(initialData).forEach((key) => {
+        setValue(key, initialData[key]);
+      });
     }
-  }, [initialData, form]);
+  }, [initialData, setValue]);
 
   const handleImageChange = useCallback(
     (e) => {
       const file = e.target.files[0];
       if (file) {
-        setImage(file);
-        form.setValue("image", file);
+        setValue("image", file);
       }
     },
-    [form]
+    [setValue]
   );
 
-  const handleClear = () => {
-    // Todo: Clear All Data
-    form.reset();
-    setImage(null);
-    fileInputRef.current.value = null;
+  const handleClear = useCallback(() => {
+    form.reset({
+      title: "",
+      description: "",
+      category: "Startup",
+      content: form.getValues("content"), // Keep the content
+      image: null,
+      tags: [],
+    });
+    if (fileInputRef.current) fileInputRef.current.value = null;
     toast({
       type: "success",
       description: "Form cleared successfully except content",
-    })
-  }
+    });
+  }, [form]);
+
+  const addTag = useCallback(
+    (tag) => {
+      if (tag && !tags.includes(tag)) {
+        setValue("tags", [...tags, tag]);
+      }
+      setNewTag("");
+    },
+    [tags, setValue]
+  );
+
+  const removeTag = useCallback(
+    (tagToRemove) => {
+      setValue(
+        "tags",
+        tags.filter((tag) => tag !== tagToRemove)
+      );
+    },
+    [tags, setValue]
+  );
 
   const onSubmit = async (data) => {
     if (!data.content) {
@@ -97,7 +131,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
       });
       return;
     }
-    if (!image && !isEditMode) {
+    if (!data.image && !isEditMode) {
       setAlertInfo({ type: "error", message: "Please upload an image" });
       return;
     }
@@ -106,13 +140,14 @@ const BlogForm = ({ initialData, isEditMode }) => {
     setAlertInfo(null);
 
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append("image", data.image);
     formData.append("title", data.title);
     formData.append("description", data.description);
     formData.append("content", data.content);
     formData.append("category", data.category);
     formData.append("author", session?.user?._id);
     formData.append("authorImg", session?.user?.image || "/author_img.png");
+    formData.append("tags", data.tags.join("#"));
 
     try {
       if (isEditMode) {
@@ -148,12 +183,12 @@ const BlogForm = ({ initialData, isEditMode }) => {
 
   return (
     <div className="container mx-auto">
-      <Card className=" shadow-lg rounded-lg overflow-hidden">
+      <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardContent>
-          <CardTitle className="text-xl">
+          <CardTitle className="text-xl mb-4">
             {isEditMode ? "Edit Blog Post" : "Add New Blog Post"}
           </CardTitle>
-          <Separator className="mb-2"/>
+          <Separator className="mb-6" />
           {alertInfo && (
             <Alert
               variant={alertInfo.type === "error" ? "destructive" : "default"}
@@ -180,32 +215,24 @@ const BlogForm = ({ initialData, isEditMode }) => {
                         </FormLabel>
                         <FormControl>
                           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-primary transition-colors">
-                            {image && image instanceof File ? (
+                            {image && (
                               <Image
                                 priority
                                 className="w-full h-48 object-cover mb-2 rounded"
-                                src={URL.createObjectURL(image)}
+                                src={
+                                  image instanceof File
+                                    ? URL.createObjectURL(image)
+                                    : image
+                                }
                                 alt="Upload Area"
                                 width={500}
                                 height={250}
                               />
-                            ) : (
-                              image && (
-                                <Image
-                                  priority
-                                  className="w-full h-48 object-cover mb-2 rounded"
-                                  src={image}
-                                  alt="Upload Area"
-                                  width={500}
-                                  height={250}
-                                />
-                              )
                             )}
-
                             {!image && (
                               <div className="flex flex-col items-center justify-center py-8">
-                                <Upload className="w-12 h-12 " />
-                                <p className="mt-2 text-sm ">
+                                <Upload className="w-12 h-12" />
+                                <p className="mt-2 text-sm">
                                   Click or drag to upload
                                 </p>
                               </div>
@@ -232,10 +259,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
                           Blog Title
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter blog title"
-                            {...field}
-                          />
+                          <Input placeholder="Enter blog title" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -246,7 +270,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-lg font-semibold ">
+                        <FormLabel className="text-lg font-semibold">
                           Blog Description
                         </FormLabel>
                         <FormControl>
@@ -265,7 +289,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
                     name="category"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-lg font-semibold ">
+                        <FormLabel className="text-lg font-semibold">
                           Blog Category
                         </FormLabel>
                         <Select
@@ -273,7 +297,7 @@ const BlogForm = ({ initialData, isEditMode }) => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="">
+                            <SelectTrigger>
                               <SelectValue placeholder="Select a category" />
                             </SelectTrigger>
                           </FormControl>
@@ -304,25 +328,91 @@ const BlogForm = ({ initialData, isEditMode }) => {
                         <>{isEditMode ? "Update Blog Post" : "Add Blog Post"}</>
                       )}
                     </Button>
-                    <Button className="grayscale hover:grayscale-0" variant="destructive" type="button" onClick={handleClear}>Clear All</Button>
+                    <Button
+                      className="grayscale hover:grayscale-0"
+                      variant="destructive"
+                      type="button"
+                      onClick={handleClear}
+                    >
+                      Clear All
+                    </Button>
                   </div>
                 </div>
                 <div className="md:col-span-2">
                   <FormField
                     control={form.control}
+                    name="tags"
+                    render={() => (
+                      <FormItem className="mt-6">
+                        <FormLabel className="text-lg font-semibold">
+                          Tags
+                        </FormLabel>
+                        <FormControl>
+                          <div className="border p-2 rounded-lg">
+                            <div className="flex gap-2 mb-2">
+                              <Input
+                                value={newTag}
+                                onChange={(e) => setNewTag(e.target.value)}
+                                placeholder="Add a custom tag"
+                                className="flex-grow"
+                              />
+                              <Button
+                                type="button"
+                                onClick={() => addTag(newTag)}
+                                disabled={!newTag.trim()}
+                              >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add
+                              </Button>
+                            </div>
+                            <Select onValueChange={(value) => addTag(value)}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a predefined tag" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {predefinedTags.map((tag) => (
+                                  <SelectItem key={tag} value={tag}>
+                                    {tag}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {tags.map((tag, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center space-x-2 pr-1 pl-3 py-[1px] rounded-full dark:bg-secondary dark:text-foreground text-sm"
+                                >
+                                  <span>{tag}</span>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => removeTag(tag)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="content"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-lg font-semibold ">
+                        <FormLabel className="text-lg font-semibold">
                           Blog Content
                         </FormLabel>
                         <FormControl>
                           <div className="border border-gray-200 rounded-lg overflow-hidden">
                             <EditorComponent
                               markdown={field.value}
-                              setContent={(value) =>
-                                form.setValue("content", value)
-                              }
+                              setContent={(value) => setValue("content", value)}
                             />
                           </div>
                         </FormControl>

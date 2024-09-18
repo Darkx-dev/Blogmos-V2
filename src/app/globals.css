@@ -84,6 +84,10 @@ body
   width: 100%;
 }
 
+body > div.mdxeditor-popup-container._editorRoot_uazmk_53._popupContainer_uazmk_1220.\*\:z-50 {
+  z-index: 9999
+}
+
 
 @layer base {
   :root {
