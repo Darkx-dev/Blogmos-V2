@@ -35,10 +35,7 @@ export async function GET(req) {
         path: "author",
         select: "name profileImg",
       },
-      select: {
-        image: admin ? 0 : 1,
-        description: admin ? 0 : 1,
-      },
+      select: `-viewedBy -content ${admin ? "-image -description" : ""}`,
     };
 
     let filter = {};
