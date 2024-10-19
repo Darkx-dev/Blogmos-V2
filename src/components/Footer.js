@@ -6,7 +6,7 @@ import { IconBrandFacebook, IconBrandGoogle, IconX } from "@tabler/icons-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-black py-2 sm:py-6 mt-auto px-4 sm:rounded-t-full">
+    <footer className="bg-black py-2 sm:py-6 mt-auto px-4">
       <div className="container mx-auto px-5 flex flex-col gap-4 items-center sm:flex-row justify-between">
         {/* Logo Section */}
         <div className="flex items-center gap-[3px] text-white">

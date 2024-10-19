@@ -1,203 +1,196 @@
-"use client";
+'use client'
 
-import React, { useCallback, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import axios from "axios";
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import DOMPurify from "dompurify";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
-import "highlight.js/styles/github-dark.css";
-import {
-  IconBrandFacebook,
-  IconBrandGoogle,
-  IconBrandTwitterFilled,
-} from "@tabler/icons-react";
-import { handleShare } from "@/lib/utils";
-import NavBar from "@/components/NavBar";
-import { Separator } from "@/components/ui/separator";
+import React, { useCallback, useEffect, useState } from 'react'
+import Image from 'next/image'
+import { notFound } from 'next/navigation'
+import axios from 'axios'
+import dynamic from 'next/dynamic'
+import DOMPurify from 'dompurify'
+import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import { IconBrandFacebook, IconBrandTwitterFilled, IconBrandLinkedin, IconLink } from '@tabler/icons-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import NavBar from '@/components/NavBar'
+import Footer from '@/components/Footer'
+import 'highlight.js/styles/github-dark.css'
 
-const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
+const Markdown = dynamic(() => import('react-markdown'), { ssr: false })
 
-const purify = (content) => DOMPurify.sanitize(content);
+const purify = (content) => DOMPurify.sanitize(content)
 
-const Blog = ({ params }) => {
-  const { id } = params;
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function BlogPost({ params }) {
+  const { id } = params
+  const [error, setError] = useState(null)
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const fetchBlogData = useCallback(async () => {
     try {
-      const response = await axios.get("/api/blog", { params: { id } });
-      setData(response.data.blog);
+      const response = await axios.get('/api/blog', { params: { id } })
+      setData(response.data.blog)
     } catch (error) {
-      setError("Failed to load blog post. Please try again later.");
+      setError('Failed to load blog post. Please try again later.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [id]);
+  }, [id])
 
   useEffect(() => {
-    const timer = setTimeout(fetchBlogData, 500);
-    return () => clearTimeout(timer);
-  }, [fetchBlogData]);
+    const timer = setTimeout(fetchBlogData, 500)
+    return () => clearTimeout(timer)
+  }, [fetchBlogData])
 
-  if (error) return notFound();
-  if (loading) return <LoadingSkeleton />;
-  if (!data) return null;
+  if (error) return notFound()
+  if (loading) return <><NavBar /><LoadingSkeleton /></>
+  if (!data) return null
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <Header />
-      <main className="flex-1">
-        <HeroSection data={data} />
-        <ArticleContent data={data} />
-        <Separator />
-        <ShareSection title={data?.title} />
+    <div className="min-h-screen flex flex-col bg-background">
+      <NavBar />
+      <main className="flex-grow container mx-auto px-4 py-8 mt-10">
+        <article className="max-w-4xl mx-auto">
+          <HeroSection data={data} />
+          <Card className="mt-8">
+            <CardContent className="p-6">
+              <ArticleContent data={data} />
+            </CardContent>
+          </Card>
+          <ShareSection title={data.title} />
+        </article>
       </main>
       <Footer />
     </div>
-  );
-};
-
-const Header = () => (
-  <header>
-    <NavBar />
-  </header>
-);
+  )
+}
 
 const HeroSection = ({ data }) => (
-  <section className="pt-20 px-6 text-center dark:bg-transparent">
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.title}</h1>
-      <div className="flex items-center justify-center space-x-4">
-        <Image
-          src={data.author.profileImg}
-          width={60}
-          height={60}
-          alt={data.author.name}
-          className="rounded-full border-2 border-muted"
-        />
-        <div>
-          <p className="font-semibold">{data.author.name}</p>
-          <p className="text-sm text-muted-foreground">
-            {new Date(data.createdAt).toLocaleDateString()}
-          </p>
-        </div>
+  <section className="text-center">
+    <h1 className="text-4xl md:text-5xl font-bold mb-4">{data.title}</h1>
+    <p className="text-xl text-muted-foreground mb-6">{data.description}</p>
+    <div className="flex items-center justify-center space-x-4 mb-8">
+      <Avatar className="h-12 w-12">
+        <AvatarImage src={data.author.profileImg} alt={data.author.name} />
+        <AvatarFallback>{data.author.name[0]}</AvatarFallback>
+      </Avatar>
+      <div className="text-left">
+        <p className="font-semibold">{data.author.name}</p>
+        <p className="text-sm text-muted-foreground">
+          {new Date(data.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </p>
       </div>
     </div>
-  </section>
-);
-
-const ArticleContent = ({ data }) => (
-  <article className="max-w-3xl mx-auto px-6 py-12">
     <Image
       src={data.image}
       width={1280}
       height={720}
       alt={data.title}
-      className="w-full h-auto aspect-video object-cover rounded-lg shadow-md mb-8"
+      className="w-full h-auto aspect-video object-cover rounded-lg shadow-lg"
     />
-    <p className="text-xl text-muted-foreground mb-8">{data.description}</p>
-    <div className="prose dark:prose-invert max-w-none mb-10">
-      <Markdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeHighlight]}
-        components={{
-          img: ({ node, width, height, ...props }) => (
-            <Image
-              src={props.src}
-              alt={props.alt || ""}
-              width={width || 400}
-              height={height || 300}
-              className="my-4 rounded-md max-w-full size-full mx-auto"
-            />
-          ),
-          code: ({ node, className, ...props }) => (
-            <pre className={`${className} p-3 rounded-md my-2`} {...props}>
-              <code {...props}>{props.children}</code>
-            </pre>
-          ),
-        }}
-      >
-        {purify(data.content)}
-      </Markdown>
-    </div>
-    <div className="flex flex-wrap gap-2">
-    <Tags tags={data?.tags} />
-    </div>
-  </article>
-);
+  </section>
+)
 
-const Tags = ({ tags }) => {
-  if (tags)
-    return tags.map((tag) => {
-      return (
-        <span
-          key={tag}
-          className="bg-secondary rounded-full px-2 py-1 w-fit text-nowrap inline-block"
-        >
+const ArticleContent = ({ data }) => (
+  <div className="prose dark:prose-invert max-w-none">
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw, rehypeHighlight]}
+      components={{
+        img: ({ node, ...props }) => (
+          <Image
+            src={props.src}
+            alt={props.alt || ''}
+            width={800}
+            height={600}
+            className="my-4 rounded-md max-w-full h-auto mx-auto"
+          />
+        ),
+        code: ({ node, className, ...props }) => (
+          <pre className={`${className} p-4 rounded-md my-4 overflow-x-auto`}>
+            <code {...props} />
+          </pre>
+        ),
+      }}
+    >
+      {purify(data.content)}
+    </Markdown>
+    <div className="flex flex-wrap gap-2 mt-8">
+      {data.tags.map((tag) => (
+        <Badge key={tag} variant="secondary">
           #{tag}
-        </span>
-      );
-    });
-};
-
-const ShareSection = ({ title }) => (
-  <div className="max-w-3xl mx-auto my-12 px-6 shadow-none">
-    <div>
-      <h3>Share this article</h3>
+        </Badge>
+      ))}
     </div>
-    <div>
+  </div>
+)
+
+const ShareSection = ({ title }) => {
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+  const handleShare = (platform) => {
+    let url = ''
+    switch (platform) {
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
+        break
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`
+        break
+      case 'linkedin':
+        url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(title)}`
+        break
+      default:
+        navigator.clipboard.writeText(shareUrl)
+        return
+    }
+    window.open(url, '_blank')
+  }
+
+  return (
+    <div className="mt-12">
+      <h3 className="text-lg font-semibold mb-4">Share this article</h3>
       <div className="flex space-x-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => handleShare({ title }, window.location.href)}
-        >
+        <Button variant="outline" size="icon" onClick={() => handleShare('facebook')}>
           <IconBrandFacebook className="h-4 w-4" />
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => handleShare({ title }, window.location.href)}
-        >
+        <Button variant="outline" size="icon" onClick={() => handleShare('twitter')}>
           <IconBrandTwitterFilled className="h-4 w-4" />
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            handleShare(
-              { title, text: "\nRead more on :" },
-              window.location.href
-            )
-          }
-        >
-          <IconBrandGoogle className="h-4 w-4" />
+        <Button variant="outline" size="icon" onClick={() => handleShare('linkedin')}>
+          <IconBrandLinkedin className="h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={() => handleShare('copy')}>
+          <IconLink className="h-4 w-4" />
         </Button>
       </div>
     </div>
-  </div>
-);
+  )
+}
 
 const LoadingSkeleton = () => (
-  <div className="max-w-3xl mx-auto px-6 py-12">
-    <Skeleton className="w-full h-64 rounded-lg mb-8" />
-    <Skeleton className="w-3/4 h-10 mb-4" />
-    <Skeleton className="w-full h-6 mb-2" />
-    <Skeleton className="w-full h-6 mb-2" />
-    <Skeleton className="w-2/3 h-6 mb-8" />
-    <Skeleton className="w-full h-40" />
+  <div className="max-w-4xl mx-auto px-4 py-8 mt-10">
+    <Skeleton className="w-full h-14 mb-4 mx-auto" />
+    <Skeleton className="w-3/4 h-6 mb-2 mx-auto" />
+    <Skeleton className="w-2/4 h-6 mb-8 mx-auto" />
+    <div className="flex items-center justify-center space-x-4 mb-8">
+      <Skeleton className="w-12 h-12 rounded-full" />
+      <div>
+        <Skeleton className="w-32 h-4 mb-2" />
+        <Skeleton className="w-24 h-3" />
+      </div>
+    </div>
+    <Skeleton className="w-full h-96 rounded-lg mb-8" />
+    <Skeleton className="w-full h-4 mb-2" />
+    <Skeleton className="w-full h-4 mb-2" />
+    <Skeleton className="w-2/3 h-4 mb-8" />
+    <Skeleton className="w-full h-64" />
   </div>
-);
-
-export default Blog;
+)

@@ -90,6 +90,13 @@ const NavBar = ({ className }) => {
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/about" legacyBehavior passHref>
+                    <NavigationMenuLink className=" mx-4 hover:border-current transition-all py-2 border-b-2 border-transparent">
+                      About
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -101,12 +108,11 @@ const NavBar = ({ className }) => {
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
                   <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="backdrop-blur-md bg-transparent border-none">
+              <SheetContent side="left" className="backdrop-blur-md bg-transparent border-none text-white">
                 <SheetHeader>
-                  <SheetTitle>Blogmos</SheetTitle>
+                  <SheetTitle className="text-white">Blogmos</SheetTitle>
                   <SheetDescription>Explore the cosmos of blogmos</SheetDescription>
                 </SheetHeader>
                 <div className="py-4">
